@@ -5,6 +5,6 @@ void testFrames (void) {
 	
 	int translation[2] = {0,0};
 	
-	createFrames (".\\TestRepo\\00.Test_Images\\lena.bmp", translation, 100);
+	createFrames ("C:\\Users\\Gautam\\Desktop\\Project\\00.Test_Images\\lena.bmp", translation, 100);
 
 }

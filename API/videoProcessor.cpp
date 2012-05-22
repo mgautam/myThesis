@@ -1,7 +1,6 @@
 #include <API/videoProcessor.h>
 
 #include <Features/featureStruct.h>
-#include <Features/FeatureEngine.h>
 #include <Features/matchFeatures.h>
 #include <ModelAffine/coordinates.h>
 #include <ModelAffine/fitAffineMatrix.h>
@@ -11,11 +10,8 @@
 using namespace std;
 
 void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
-
-	BuildFeature (".\\TestRepo\\00.Test_Images\\lena.bmp", -1, ".\\TestRepo\\01.Training");
-/*
 	FEATURES train;
-	FILE *featureFile = fopen (".\\TestRepo\\01.Training\\07.SIFT_Keys\\train.bin","rb");	
+	FILE *featureFile = fopen ("C:\\Users\\Gautam\\Desktop\\Project\\01.Training\\07.SIFT_Keys\\siftfeature.bin","rb");	
 	fread (&(train.FeatureVectorLength),sizeof (int), 1, featureFile);
 	fread (&(train.Number_of_Features),sizeof (int), 1, featureFile);
 	
@@ -24,7 +20,6 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 	for (int index = 0; index < train.Number_of_Features; index ++) {
 		fread ( &(train.features[index].x), sizeof (double), 1 , featureFile);
 		fread ( &(train.features[index].y), sizeof (double), 1 , featureFile);
-		fseek (featureFile, 2 * sizeof (double), SEEK_CUR); // Skip Reading scale and key orientation
 		train.features[index].FeatureVector = new char[train.FeatureVectorLength];
 		fread ( train.features[index].FeatureVector, sizeof (char), train.FeatureVectorLength , featureFile);
 	}
@@ -33,19 +28,11 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 
 
 	FEATURES test;
-*/	char *filename;
-/*	COORDS* coordinateMappings;
+	char filename[100];
+	COORDS* coordinateMappings;
 	COORDS initial,final;
-*/	for ( int frameIndex = 0; frameIndex < 100; frameIndex++ ) {
-
-		// Extrac Sift Features
-		filename = new char[100];
-		sprintf (filename, ".\\TestRepo\\00.Test_Images\\lena.bmp(%d).bmp",frameIndex);
-		cout << endl << filename << endl;
-		BuildFeature (filename, frameIndex, ".\\TestRepo\\02.Test");
-
-		// Read SiftFeatures (if this works perfectly we could build this in RAM instead of writing to disk to make it faster
-/*		sprintf (filename, ".\\TestRepo\\02.Test\\07.SIFT_Keys\\testFeature(%d).bin",frameIndex);
+	for ( int frameIndex = 0; frameIndex < 100; frameIndex++ ) {
+		sprintf (filename, "C:\\Users\\Gautam\\Desktop\\Project\\02.Test\\07.SIFT_Keys\\siftfeature(%d).bin",frameIndex);
 		featureFile = fopen (filename,"rb");	
 		fread (&(test.FeatureVectorLength),sizeof (int), 1, featureFile);
 		fread (&(test.Number_of_Features),sizeof (int), 1, featureFile);
@@ -60,7 +47,9 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 		}
 		fclose (featureFile);
 
-		coordinateMappings = findNearestNeighbor (train, test, threshold);
+
+
+		coordinateMappings = findNearestNeighbor (train,test, threshold);
 		initial = coordinateMappings[0];
 		final = coordinateMappings[1];
 		
@@ -94,8 +83,6 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 		delete coordinateMappings->y;
 		delete coordinateMappings->scores;
 		delete coordinateMappings;
-*/
-		delete filename;
 	}	
 /*
 	// Garbage Collection: Train Feature

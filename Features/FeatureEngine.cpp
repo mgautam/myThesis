@@ -3,6 +3,7 @@
 using namespace std;
 #include <math.h>
 
+#include <Features/Magnor.h>
 #include <Features/FeatureEngine.h>
 
 #include <bmpAccess/bmpStructs.h>
@@ -13,7 +14,6 @@ using namespace std;
 
 #include <CriticalPoints/Extreme.h>
 
-#include <Features/Magnor.h>
 
 #define sigma 1/sqrt(2.0)
 #define numOctaves 4

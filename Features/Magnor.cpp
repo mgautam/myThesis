@@ -1,6 +1,8 @@
 #include <stdio.h>
-#include <stdlib.h>
+#include<stdlib.h>
 #include<math.h>
+#include <iostream>
+using namespace std;
 
 #include <DSP/filter.h>
 #include <Features/Magnor.h>
@@ -14,9 +16,6 @@
 #define NUMBER_OF_ORIENTATION_BINS_II 8.0
 
 #define PEAK_THRESHOLD 0.8
-
-#include <iostream>
-using namespace std;
 
 static double bilinearInterpolate (double x, double y, GTYPE *Array, int width, int height) {
 
