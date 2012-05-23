@@ -60,21 +60,21 @@ void BuildFeature (char* imFile, int frameIndex, char* ProjectFolder) {
 			releaseImage(extremeImage);
 			totKeys += numKeys;
 	}
-
-		// Garbage collection:Pyramid
-		for (int i = 0; i < numOctaves; i++) {
-			int j =0;
-			for(; j < numBlurs-2; j++) {
-				releaseImage (Pyramid[0][i][j]);
-				releaseImage (Pyramid[1][i][j]);
-			}
-			delete Pyramid[0][i][j]; // Gaussian Pyramid has one extra Layer
-			delete Pyramid[0][i];
-			delete Pyramid[1][i];			
+		
+	// Garbage collection:Pyramid
+	for (int i = 0; i < numOctaves; i++) {
+		int j =0;
+		for(; j < numBlurs-2; j++) {
+			releaseImage (Pyramid[0][i][j]);
+			releaseImage (Pyramid[1][i][j]);
 		}
-		delete Pyramid[0];
-		delete Pyramid[1];
-		delete Pyramid;
+		delete Pyramid[0][i][j]; // Gaussian Pyramid has one extra Layer
+		delete Pyramid[0][i];
+		delete Pyramid[1][i];			
+	}
+	delete Pyramid[0];
+	delete Pyramid[1];
+	delete Pyramid;
 
 	writeAllSift(sigma,numOctaves,numBlurs,ProjectFolder,frameIndex);
 	//visual3(*visual,ProjectFolder);

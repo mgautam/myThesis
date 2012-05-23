@@ -91,21 +91,47 @@ void angleKeyCalc(IMAGE *ExPix, int numKeys, int octave, int blur, char* Project
 
 	int number_of_sectors = FEATURE_LENGTH;
 
-	int window_radius = 16;	
+	int window_radius = 15;	
 	
-	int ***window = new int**[number_of_sectors];
+	// Sector Mask (Window) Initialization
+	int ***sectorWindow = new int**[number_of_sectors];
 	for (int sectorIndex = 0; sectorIndex < number_of_sectors; sectorIndex++) {
-		window[sectorIndex] = new int*[2*window_radius];
+		sectorWindow[sectorIndex] = new int*[2*window_radius];
 		for(int k1 = -window_radius; k1 < window_radius; k1++) {
-			window[sectorIndex][k1+window_radius] = new int[2*window_radius];
-			for(int k2 = -window_radius; k2 < window_radius; k2++) {
-				window[sectorIndex][k1+window_radius][k2+window_radius] = 0;
-				if ( sqrt ((double)(k1*k1 + k2*k2)) < window_radius )
-					window[ (int)((atan ((double)k1/(double)k2)+pi) * (double)number_of_sectors/(2*pi))][k1+window_radius][k2+window_radius] = 1;
-			}
+			sectorWindow[sectorIndex][k1+window_radius] = new int[2*window_radius];
+			for(int k2 = -window_radius; k2 < window_radius; k2++)
+				sectorWindow[sectorIndex][k1+window_radius][k2+window_radius] = 0;
 		}
-	}
+	} 
+
+	// Window Definition
+		for(int k1 = -window_radius; k1 < 0; k1++)
+			for(int k2 = -window_radius; k2 < 0; k2++)
+				if ( sqrt ((double)(k1*k1 + k2*k2)) < window_radius )
+					sectorWindow[ number_of_sectors/2+(int)((atan ((double)k1/(double)k2)+pi/2.0) * (double)number_of_sectors/(2*pi))][k1+window_radius][k2+window_radius] = 1;
+		for(int k1 = -window_radius; k1 < window_radius; k1++)
+			for(int k2 = 0; k2 < window_radius; k2++)
+				if ( sqrt ((double)(k1*k1 + k2*k2)) < window_radius )
+					sectorWindow[ (int)((atan ((double)k1/(double)k2)+pi/2.0) * (double)number_of_sectors/(2*pi))][k1+window_radius][k2+window_radius] = 1;
+		for(int k1 = 0; k1 < window_radius; k1++)
+			for(int k2 = 0; k2 < window_radius; k2++)
+				if ( sqrt ((double)(k1*k1 + k2*k2)) < window_radius )
+					sectorWindow[(int)((atan ((double)k1/(double)k2)+pi/2.0) * (double)number_of_sectors/(2*pi))][k1+window_radius][k2+window_radius] = 1;
+		for(int k1 = 0; k1 < window_radius; k1++)
+			for(int k2 = -window_radius; k2 < 0; k2++)
+				if ( sqrt ((double)(k1*k1 + k2*k2)) < window_radius )
+					sectorWindow[ number_of_sectors/2+(int)((atan ((double)k1/(double)k2)+pi/2.0) * (double)number_of_sectors/(2*pi))][k1+window_radius][k2+window_radius] = 1;
 		
+/*
+	for (int sectorIndex = 0; sectorIndex < number_of_sectors; sectorIndex++) {
+		for(int k1 = -window_radius; k1 < window_radius; k1++) {
+			for(int k2 = -window_radius; k2 < window_radius; k2++)
+				cout << sectorWindow[sectorIndex][k1+window_radius][k2+window_radius] << " ";
+			cout << endl;
+		}
+		cout << endl;
+	}
+*/	
 
 	char filename[MAX_FILE_NAME_LENGTH];	
 
@@ -135,6 +161,8 @@ void angleKeyCalc(IMAGE *ExPix, int numKeys, int octave, int blur, char* Project
 	int keyIndex = 0;
 	GTYPE Magnif = 1.0 / pow(2.0,octave);
 	GTYPE stdev = 1.5 * Magnif;
+	int sectorOffset = 0;
+	int totalNeighbors = 0;
 	for(int n1 = 0; n1 < (ExPix->height)-1; n1++) {
 		for(int n2 = 0; n2 < (ExPix->width)-1; n2++) {
 			
@@ -143,17 +171,16 @@ void angleKeyCalc(IMAGE *ExPix, int numKeys, int octave, int blur, char* Project
 				for(int i = 0; i < NUMBER_OF_ORIENTATION_BINS_I; i++) 
 						oriBins[i] = 0;
 					
+				// aren't the orientations given by atan only distributed between -pi/2 to pi/2
+				// How can we say that they occupy the whole 2*pi space
 					for(float k1=-3.5; k1 < 4; k1++)
-						for(float k2=-3.5; k2 < 4; k2++) {
-							if((n1+k1*Magnif) > 0 && (n1+k1*Magnif) < ExPix->height && (n2+k2*Magnif) > 0 && (n2+k2*Magnif) < ExPix->width) {
+						for(float k2=-3.5; k2 < 4; k2++)
+							if((n1+k1*Magnif) > 0 && (n1+k1*Magnif) < ExPix->height && (n2+k2*Magnif) > 0 && (n2+k2*Magnif) < ExPix->width)
 								oriBins[(int) ((bilinearInterpolate ((n1+k1*Magnif),(n2+k2*Magnif),orientations,ExPix->width,ExPix->height)/(2.0*pi) + 0.5) * NUMBER_OF_ORIENTATION_BINS_I)] 
 										+= bilinearInterpolate ((n1+k1*Magnif),(n2+k2*Magnif),Magnitudes,ExPix->width,ExPix->height)
 											* exp(-pow((GTYPE)k1*Magnif,2)/(2.0*pow(stdev,2)))/(stdev*sqrt(2.0*pi))
 												* exp(-pow((GTYPE)k2*Magnif,2)/(2.0*pow(stdev,2)))/(stdev*sqrt(2.0*pi));
-							}						
-						}
-					
-					
+										
 
 					double maxBin = 0;
 					for(int i=0; i < NUMBER_OF_ORIENTATION_BINS_I; i++)
@@ -168,91 +195,89 @@ void angleKeyCalc(IMAGE *ExPix, int numKeys, int octave, int blur, char* Project
 							numMax++;						
 						}
 
-
-				for ( int subIndex = 0; subIndex < numMax; subIndex++ ) {
+				int subIndex = 0;
+				for ( ; subIndex < numMax; subIndex++ ) {
 
 					AngleDescriptor[keyIndex].x = n1;
 					AngleDescriptor[keyIndex].y = n2;
 					AngleDescriptor[keyIndex].scale = Magnif;
 					
+					// Check whether I have to change the offset to KeyOrientation as -pi/2 < atanX < pi/2
+					sectorOffset = (AngleDescriptor[keyIndex].KeyOrientation + pi)* number_of_sectors / (2*pi);
+
+					int totalNeighbors = 0;
 					for (int sectorIndex = 0 ; sectorIndex < number_of_sectors; sectorIndex++) {
 						AngleDescriptor[keyIndex].sectorCount[sectorIndex] = 0;
-						for (int k1 = -window_radius; k1 < window_radius; k1++) {
-							for (int k2 = -window_radius; k2 < window_radius; k2++) {
+						for (int k1 = -window_radius; k1 < window_radius; k1++)
+							for (int k2 = -window_radius; k2 < window_radius; k2++)
 							// I should be able to add single side edges
-								if ( n1 + k1 <= ExPix->height && n1 + k1 >= 0) {
-									if ( n2 + k2 <= ExPix->width && n2 + k2 >= 0) {
-										AngleDescriptor[keyIndex].sectorCount[sectorIndex] += ExPix->imageData[(n1+k1)*ExPix->width+(n2+k2)] 
-																							* window[sectorIndex][k1][k2];
+								if ( n1 + k1 < (ExPix->height - 1) && n1 + k1 >= 0)
+									if ( n2 + k2 < (ExPix->width - 1) && n2 + k2 >= 0) {
+										AngleDescriptor[keyIndex].sectorCount[sectorIndex] 
+											+= ExPix->imageData[(n1+k1)*ExPix->width+(n2+k2)] 
+												* sectorWindow[(sectorIndex + sectorOffset) % number_of_sectors][k1+window_radius][k2+window_radius];
 									}
-								}								
-							}
-						}
 						AngleDescriptor[keyIndex].sectorCount[sectorIndex] /= MAX_PIXEL_VALUE;
-					}
-					keyIndex ++;
-				}
-
-				
-
-
-				cout << "\t\tKeys with Orientation = " << keyIndex << endl;
-				FILE *keyFile;
-				sprintf(filename,"%s\\07.Angle_Keys\\%d%d.bin",Project_Folder,octave,blur);
-				keyFile = fopen(filename,"wb");
-				fwrite(&keyIndex,sizeof(int),1,keyFile);
-				fwrite(AngleDescriptor,sizeof(angleKey),keyIndex,keyFile);
-				fclose(keyFile);
-
-				// Garbage Collection
-				for (int sectorIndex = 0; sectorIndex < number_of_sectors; sectorIndex++) {
-					for(int k1 = -window_radius; k1 < window_radius; k1++)
-						delete window[sectorIndex][k1+window_radius];
-					delete window[sectorIndex];
-				}
-				delete window;
-
-				delete Magnitudes;
-				delete orientations;
-				delete AngleDescriptor;		
+						totalNeighbors += AngleDescriptor[keyIndex].sectorCount[sectorIndex];
+					}				
+					if (totalNeighbors > 10) keyIndex++;
+				}				
 			}
 		}
 	}
+	
+	cout << "\t\tKeys with Orientation = " << keyIndex << endl;
+	FILE *keyFile;
+	sprintf(filename,"%s\\07.Angle_Keys\\%d%d.bin",Project_Folder,octave,blur);
+	keyFile = fopen(filename,"wb");
+	fwrite(&keyIndex,sizeof(int),1,keyFile);
+	fwrite(AngleDescriptor,sizeof(angleKey),keyIndex,keyFile);
+	fclose(keyFile);
+
+
+	// Garbage Collection
+	for (int sectorIndex = 0; sectorIndex < number_of_sectors; sectorIndex++) {
+		for(int k1 = -window_radius; k1 < window_radius; k1++)
+			delete sectorWindow[sectorIndex][k1+window_radius];
+		delete sectorWindow[sectorIndex];
+	}
+	delete sectorWindow;
+
+	delete Magnitudes;
+	delete orientations;
+	delete AngleDescriptor;	
 }
 
 
 void writeAllSift (GTYPE sigma, int numOctaves, int numBlurs, char *PROJECT_FOLDER, int frameIndex) {
-	/*
 	FILE *keyFile;
 	int numKeys,totalKeys = 0;
-	siftKey *keyDescriptors;
+	angleKey *AngleDescriptor;
 	GTYPE scale;
 	char filename[MAX_FILE_NAME_LENGTH];
 
-	if (frameIndex == -1) sprintf (filename,"%s\\07.SIFT_Keys\\train.bin",PROJECT_FOLDER);
-	else sprintf (filename,"%s\\07.SIFT_Keys\\testFeature(%d).bin",PROJECT_FOLDER,frameIndex);
-	cout << filename << endl;
+	if (frameIndex == -1) sprintf (filename,"%s\\07.Angle_Keys\\train.bin",PROJECT_FOLDER);
+	else sprintf (filename,"%s\\07.Angle_Keys\\testFeature(%d).bin",PROJECT_FOLDER,frameIndex);
 	FILE *AllKeyFile = fopen (filename,"wb");
 
 	int featurelength = FEATURE_LENGTH;
 	fwrite(&featurelength,sizeof(int),1,AllKeyFile);
-	fseek(AllKeyFile,sizeof(int),0); // Allocated space to write Total Number of features
+	fseek(AllKeyFile,sizeof(int),SEEK_CUR); // Allocated space to write Total Number of features
 	
 	for (int i = 0; i < numOctaves; i++)
 		for (int j = 1; j < numBlurs-2; j++) {
-			sprintf(filename,"%s\\07.SIFT_Keys\\%d%d.bin",PROJECT_FOLDER,i,j);
+			sprintf(filename,"%s\\07.Angle_Keys\\%d%d.bin",PROJECT_FOLDER,i,j);
 			keyFile = fopen(filename,"rb");
 			fread(&numKeys,sizeof(int),1,keyFile);
-			keyDescriptors = new siftKey[numKeys];
-			fread(keyDescriptors,sizeof(siftKey),numKeys,keyFile);
+			AngleDescriptor = new angleKey[numKeys];
+			fread(AngleDescriptor,sizeof(angleKey),numKeys,keyFile);
 			fclose(keyFile);
 
-			fwrite(keyDescriptors,sizeof(siftKey),numKeys,AllKeyFile);
+			fwrite(AngleDescriptor,sizeof(angleKey),numKeys,AllKeyFile);
 			totalKeys += numKeys;
-			delete keyDescriptors;
+			delete AngleDescriptor;
 		}
 	fseek(AllKeyFile,sizeof (int),SEEK_SET); // Skip over previous written Feature Length =128
 	fwrite(&totalKeys,sizeof(int),1,AllKeyFile);
 	fclose(AllKeyFile);	
-	*/
 }

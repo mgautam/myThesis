@@ -1,4 +1,5 @@
 #include <Features/matchFeatures.h>
+#include <stdio.h>
 #include <math.h>
 
 COORDS* findNearestNeighbor (FEATURES TrainFeature,FEATURES TestFeature, double Threshold) {
@@ -19,8 +20,8 @@ COORDS* findNearestNeighbor (FEATURES TrainFeature,FEATURES TestFeature, double 
 
 	double Distance,minDistance;
 	int nearNeighborIndex = 0;
-	for ( int TestIndex = 0; TestIndex < numTestFeatures; TestIndex++) {
-
+	for ( int TestIndex = 0; TestIndex < 1000; TestIndex++) { // Change 1000 to numTestFeatures
+		printf ("%d\n",TestIndex); // Remove
 		coordinates[1].x[nearNeighborIndex] = TestFeature.features[TestIndex].x;
 		coordinates[1].y[nearNeighborIndex] = TestFeature.features[TestIndex].y;
 		minDistance = 99999999999;

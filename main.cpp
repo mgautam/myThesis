@@ -16,6 +16,7 @@
 using namespace std;
 
 int main (int argc, char **argv) {
+	// Create Rotation & Translation of smaller objects in a larger image
 	//testImageEngine ();
 	//testDSP ();
 	//testCriticalPoints ();
@@ -25,7 +26,7 @@ int main (int argc, char **argv) {
 	//testMotionExtract ();
 	//testMatchFeatures ();
 	
-	processFrames ();
+	processFrames (-1,0,true);
 
 	return 0;
 }
