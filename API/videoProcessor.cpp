@@ -11,7 +11,7 @@ using namespace std;
 
 void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 	FEATURES train;
-	FILE *featureFile = fopen ("C:\\Users\\Gautam\\Desktop\\Project\\01.Training\\07.SIFT_Keys\\siftfeature.bin","rb");	
+	FILE *featureFile = fopen ("C:\\Users\\Gautam\\Desktop\\Project\\01.Training\\07.SIFT_Keys\\train.bin","rb");	
 	fread (&(train.FeatureVectorLength),sizeof (int), 1, featureFile);
 	fread (&(train.Number_of_Features),sizeof (int), 1, featureFile);
 	
@@ -20,6 +20,7 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 	for (int index = 0; index < train.Number_of_Features; index ++) {
 		fread ( &(train.features[index].x), sizeof (double), 1 , featureFile);
 		fread ( &(train.features[index].y), sizeof (double), 1 , featureFile);
+		//cout << train.features[index].x << " " << train.features[index].y << endl;
 		train.features[index].FeatureVector = new char[train.FeatureVectorLength];
 		fread ( train.features[index].FeatureVector, sizeof (char), train.FeatureVectorLength , featureFile);
 	}
@@ -32,7 +33,7 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 	COORDS* coordinateMappings;
 	COORDS initial,final;
 	for ( int frameIndex = 0; frameIndex < 100; frameIndex++ ) {
-		sprintf (filename, "C:\\Users\\Gautam\\Desktop\\Project\\02.Test\\07.SIFT_Keys\\siftfeature(%d).bin",frameIndex);
+		sprintf (filename, "C:\\Users\\Gautam\\Desktop\\Project\\02.Test\\07.SIFT_Keys\\testfeature(%d).bin",frameIndex);
 		featureFile = fopen (filename,"rb");	
 		fread (&(test.FeatureVectorLength),sizeof (int), 1, featureFile);
 		fread (&(test.Number_of_Features),sizeof (int), 1, featureFile);
@@ -84,10 +85,12 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 		delete coordinateMappings->scores;
 		delete coordinateMappings;
 	}	
-/*
+
 	// Garbage Collection: Train Feature
+/*
 	for (int featureIndex = 0; featureIndex < test.Number_of_Features; featureIndex ++)
 		delete train.features[featureIndex].FeatureVector;
 	delete train.features;
 */
+
 }

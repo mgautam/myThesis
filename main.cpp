@@ -64,10 +64,10 @@ int main (int argc, char **argv) {
 
 	FILE *outputRotation;
 	char FileName[100];
-	for (int Threshold = 51; Threshold < 900; Threshold+=10) {
+	for (int Threshold = 50; Threshold < 950; Threshold+=10) {
 		sprintf (FileName, "C:\\Users\\Gautam\\Desktop\\Project\\02.Test\\Rotation\\Threshold(%d).bin",Threshold);
 		outputRotation = fopen (FileName, "wb");
-		processFrames (Threshold,outputRotation);
+		processFrames (Threshold,outputRotation,false);
 		fclose (outputRotation);
 	}
 	

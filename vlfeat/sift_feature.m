@@ -11,7 +11,7 @@ Ia = single(rgb2gray(imread('C:\Users\Gautam\Desktop\Project\00.Test_Images\lena
 [fa, da] = vl_sift (Ia) ;
 siz=size(da);
 
-featureFile = fopen ('C:\Users\Gautam\Desktop\Project\01.Training\07.SIFT_Keys\siftfeature.bin','w');
+featureFile = fopen ('C:\Users\Gautam\Desktop\Project\01.Training\07.SIFT_Keys\train.bin','w');
 fwrite (featureFile,siz,'uint32');
 
 for i = 1:siz(2)
@@ -29,7 +29,7 @@ for i = 0:99
     [fb, db] = vl_sift (Ib) ;
     siz=size(db);
     
-    filename = sprintf('C:\\Users\\Gautam\\Desktop\\Project\\02.Test\\07.SIFT_Keys\\siftfeature(%d).bin',i);
+    filename = sprintf('C:\\Users\\Gautam\\Desktop\\Project\\02.Test\\07.SIFT_Keys\\testFeature(%d).bin',i);
     featureFile = fopen (filename,'w');
     fwrite (featureFile,siz,'uint32');
 
@@ -45,7 +45,7 @@ for i = 0:99
 end;
 
 
-featureFile = fopen ('C:\Users\Gautam\Desktop\Project\01.Training\07.SIFT_Keys\siftfeature.bin','r');
+featureFile = fopen ('C:\Users\Gautam\Desktop\Project\01.Training\07.SIFT_Keys\train.bin','r');
 fread (featureFile,2,'uint32')
 fread (featureFile,2,'double')
 fread (featureFile,128,'uint8')
