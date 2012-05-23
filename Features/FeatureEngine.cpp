@@ -13,13 +13,13 @@ using namespace std;
 
 #include <CriticalPoints/Extreme.h>
 
-#include <Features/Magnor.h>
+#include <Features/neighborSpy.h>
 
 #define sigma 1/sqrt(2.0)
 #define numOctaves 4
 #define numBlurs 5
 
-void BuildFeature (char* srcFile, int frameIndex, char* ProjectFolder) {
+void BuildFeature (char* imFile, int frameIndex, char* ProjectFolder) {
 	IMAGE *visual;
 	GIMAGE *inImage,*lowImage,*highImage;
 	IMAGE *extremeImage;
@@ -28,7 +28,7 @@ void BuildFeature (char* srcFile, int frameIndex, char* ProjectFolder) {
 
 	
 	inImage = createImage(1024,1024,1);
-	visual = readGrey(srcFile);
+	visual = readGrey(imFile);
 	resample(Gtype(visual),2,1,inImage);
 	releaseImage (visual);
 
@@ -52,7 +52,7 @@ void BuildFeature (char* srcFile, int frameIndex, char* ProjectFolder) {
 
 			inImage = Pyramid[0][i][j];//j-1?
 			numKeys = magoriCalc(inImage,extremeImage,i,j,ProjectFolder);
-			siftKeyCalc(extremeImage, numKeys, i,j,ProjectFolder);		
+			angleKeyCalc(extremeImage, numKeys, i,j,ProjectFolder);		
 			
 		
 			//visualExtreme(extremeImage, i,j,ProjectFolder);
