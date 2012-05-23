@@ -12,16 +12,17 @@ using namespace std;
 
 void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 
-	BuildFeature (".\\TestRepo\\00.Test_Images\\lena.bmp", -1, ".\\TestRepo\\01.Training");
+	BuildFeature (".\\TestRepo\\00.Test_Images\\checkeredball.bmp", -1, ".\\TestRepo\\01.Training");
 
 	FEATURES train;
 	FILE *featureFile = fopen (".\\TestRepo\\01.Training\\07.Angle_Keys\\train.bin","rb");	
 	fread (&(train.FeatureVectorLength),sizeof (int), 1, featureFile);
-	cout << train.FeatureVectorLength << endl;
 	fread (&(train.Number_of_Features),sizeof (int), 1, featureFile);
-	cout << train.Number_of_Features << endl;
-	train.features = new FEATURE [ train.Number_of_Features ];
+		
+	cout << "Feature Length as Read: " << train.FeatureVectorLength << endl;
+	cout << "Number of Features as Read: " << train.Number_of_Features << endl;
 
+	train.features = new FEATURE [ train.Number_of_Features ];
 	for (int index = 0; index < train.Number_of_Features; index ++) {
 		fread ( &(train.features[index].x), sizeof (double), 1 , featureFile);
 		fread ( &(train.features[index].y), sizeof (double), 1 , featureFile);
@@ -37,11 +38,11 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 	char *filename;
 	COORDS* coordinateMappings;
 	COORDS initial,final;
-	for ( int frameIndex = 50; frameIndex < 51; frameIndex++ ) {
+	for ( int frameIndex = 50; frameIndex < 75; frameIndex+=25 ) {
 
 		// Extract Sift Features
 		filename = new char[100];
-		sprintf (filename, ".\\TestRepo\\00.Test_Images\\lena.bmp(%d).bmp",frameIndex);
+		sprintf (filename, ".\\TestRepo\\00.Test_Images\\Frames\\%d.bmp",frameIndex);
 		cout << endl << filename << endl;
 		BuildFeature (filename, frameIndex, ".\\TestRepo\\02.Test");
 
@@ -50,9 +51,11 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 		featureFile = fopen (filename,"rb");	
 		fread (&(test.FeatureVectorLength),sizeof (int), 1, featureFile);
 		fread (&(test.Number_of_Features),sizeof (int), 1, featureFile);
-		
-		test.features = new FEATURE [ test.Number_of_Features ];
 
+		cout << "Feature Length as Read: " << train.FeatureVectorLength << endl;
+		cout << "Number of Features as Read: " << train.Number_of_Features << endl;
+
+		test.features = new FEATURE [ test.Number_of_Features ];
 		for (int featureIndex = 0; featureIndex < test.Number_of_Features; featureIndex ++) {
 			fread ( &(test.features[featureIndex].x), sizeof (double), 1 , featureFile);
 			fread ( &(test.features[featureIndex].y), sizeof (double), 1 , featureFile);

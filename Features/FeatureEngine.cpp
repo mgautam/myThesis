@@ -27,8 +27,8 @@ void BuildFeature (char* imFile, int frameIndex, char* ProjectFolder) {
 	int numExtrema=0,totKeys =0,numKeys;
 
 	
-	inImage = createImage(1024,1024,1);
 	visual = readGrey(imFile);
+	inImage = createImage(2*visual->width,2*visual->width,1);
 	resample(Gtype(visual),2,1,inImage);
 	releaseImage (visual);
 

@@ -5,7 +5,7 @@
 
 // Keep this divisible by 4. 
 // Because of intial Quadrants split for sector creation
-#define FEATURE_LENGTH 12
+#define FEATURE_LENGTH 32
 
 struct angleKey {
 	double x, y;

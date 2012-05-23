@@ -21,12 +21,14 @@ int main (int argc, char **argv) {
 	//testDSP ();
 	//testCriticalPoints ();
 	//testMatrix ();
-	// testFrames ();
+	testFrames ();
 	//testAffineModel ();
 	//testMotionExtract ();
 	//testMatchFeatures ();
 	
 	processFrames (-1,0,true);
+
+	system ("pause");
 
 	return 0;
 }

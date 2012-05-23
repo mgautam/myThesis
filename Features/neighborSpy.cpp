@@ -37,6 +37,30 @@ static double bilinearInterpolate (double x, double y, GTYPE *Array, int width, 
 	return value/Norm;
 }
 
+static int* cyclicConv (int *Sequence, double spread) {
+	
+	GTYPE *filter = new GTYPE[2*(int)spread + 1];
+	GaussianFilter (0, spread/3, (int) -spread, 2*(int)spread + 1, filter);
+
+	double *convolved = new double[FEATURE_LENGTH];
+	for (int n = 0; n < FEATURE_LENGTH; n++) {
+		convolved[n] = 0;
+		for (int k = -(int)spread; k < spread; k++)
+			if ( (n - k) >= 0 )
+				convolved[n] += filter[k+(int)spread] * Sequence[(n-k)%FEATURE_LENGTH];
+			else
+				convolved[n] += filter[k+(int)spread] * Sequence[FEATURE_LENGTH - ((k-n)%FEATURE_LENGTH)];
+	}
+	delete filter;
+
+	int *iConvolved = new int [FEATURE_LENGTH];
+	for (int n = 0; n < FEATURE_LENGTH; n++)
+		iConvolved[n] = (int) convolved[n];
+	delete convolved;
+
+	return iConvolved;
+}
+
 int magoriCalc(GIMAGE *GaussPix, IMAGE *ExPix, int octave, int blur, char *Project_Folder) {
 	FILE *magFile,*oriFile;
 	char filename[MAX_FILE_NAME_LENGTH];
@@ -163,6 +187,7 @@ void angleKeyCalc(IMAGE *ExPix, int numKeys, int octave, int blur, char* Project
 	GTYPE stdev = 1.5 * Magnif;
 	int sectorOffset = 0;
 	int totalNeighbors = 0;
+	int *tempPtr = 0;
 	for(int n1 = 0; n1 < (ExPix->height)-1; n1++) {
 		for(int n2 = 0; n2 < (ExPix->width)-1; n2++) {
 			
@@ -203,7 +228,7 @@ void angleKeyCalc(IMAGE *ExPix, int numKeys, int octave, int blur, char* Project
 					AngleDescriptor[keyIndex].scale = Magnif;
 					
 					// Check whether I have to change the offset to KeyOrientation as -pi/2 < atanX < pi/2
-					sectorOffset = (AngleDescriptor[keyIndex].KeyOrientation + pi)* number_of_sectors / (2*pi);
+					sectorOffset = (int) ((AngleDescriptor[keyIndex].KeyOrientation + pi)* number_of_sectors / (2.0*pi));
 
 					int totalNeighbors = 0;
 					for (int sectorIndex = 0 ; sectorIndex < number_of_sectors; sectorIndex++) {
@@ -217,9 +242,18 @@ void angleKeyCalc(IMAGE *ExPix, int numKeys, int octave, int blur, char* Project
 											+= ExPix->imageData[(n1+k1)*ExPix->width+(n2+k2)] 
 												* sectorWindow[(sectorIndex + sectorOffset) % number_of_sectors][k1+window_radius][k2+window_radius];
 									}
-						AngleDescriptor[keyIndex].sectorCount[sectorIndex] /= MAX_PIXEL_VALUE;
+						AngleDescriptor[keyIndex].sectorCount[sectorIndex] /= MAX_PIXEL_VALUE;						
 						totalNeighbors += AngleDescriptor[keyIndex].sectorCount[sectorIndex];
-					}				
+
+						// Polynomial Separation
+						AngleDescriptor[keyIndex].sectorCount[sectorIndex] *= AngleDescriptor[keyIndex].sectorCount[sectorIndex] + 1;
+/*						
+						// Noise Reduction
+						tempPtr = cyclicConv (AngleDescriptor[keyIndex].sectorCount,3.0);
+						for (int i = 0; i < FEATURE_LENGTH; i++)
+							AngleDescriptor[keyIndex].sectorCount[i] = tempPtr[i];
+						delete tempPtr;
+*/					}				
 					if (totalNeighbors > 10) keyIndex++;
 				}				
 			}
@@ -253,7 +287,6 @@ void writeAllSift (GTYPE sigma, int numOctaves, int numBlurs, char *PROJECT_FOLD
 	FILE *keyFile;
 	int numKeys,totalKeys = 0;
 	angleKey *AngleDescriptor;
-	GTYPE scale;
 	char filename[MAX_FILE_NAME_LENGTH];
 
 	if (frameIndex == -1) sprintf (filename,"%s\\07.Angle_Keys\\train.bin",PROJECT_FOLDER);
