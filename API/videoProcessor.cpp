@@ -12,7 +12,7 @@ using namespace std;
 
 void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 
-	BuildFeature (".\\TestRepo\\00.Test_Images\\checkeredball.bmp", -1, ".\\TestRepo\\01.Training");
+	BuildFeature (".\\TestRepo\\00.Test_Images\\lena.bmp", -1, ".\\TestRepo\\01.Training");
 
 	FEATURES train;
 	FILE *featureFile = fopen (".\\TestRepo\\01.Training\\07.Angle_Keys\\train.bin","rb");	

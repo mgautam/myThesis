@@ -21,7 +21,7 @@ void createFrames (char *fileName, char *FramesFolder, int *translation, int num
 		
 		for (rowcol[0] = 0; rowcol[0] < OUT_HEIGHT; rowcol[0]++)
 			for (rowcol[1] = 0; rowcol[1] < OUT_WIDTH; rowcol[1]++)
-				output->imageData[((int)rowcol[0])*OUT_WIDTH+(int)rowcol[1]] = 0.5;
+				output->imageData[((int)rowcol[0])*OUT_WIDTH+(int)rowcol[1]] = 0.49; // 0.49 -> White Background; +-0.5-> Black Background
 
 
 		theta = 2*3.14*(double)iter/(double)numFrames;

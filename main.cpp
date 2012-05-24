@@ -26,7 +26,7 @@ int main (int argc, char **argv) {
 	//testMotionExtract ();
 	//testMatchFeatures ();
 	
-	processFrames (-1,0,true);
+	processFrames (-1,0,false);
 
 	system ("pause");
 

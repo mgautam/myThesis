@@ -254,7 +254,10 @@ void angleKeyCalc(IMAGE *ExPix, int numKeys, int octave, int blur, char* Project
 							AngleDescriptor[keyIndex].sectorCount[i] = tempPtr[i];
 						delete tempPtr;
 */					}				
-					if (totalNeighbors > 10) keyIndex++;
+					if (totalNeighbors > 10) {
+						//cout << totalNeighbors << "\t";
+						keyIndex++;
+					}
 				}				
 			}
 		}
