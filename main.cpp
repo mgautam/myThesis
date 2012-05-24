@@ -20,14 +20,14 @@ int main (int argc, char **argv) {
 	//testDSP ();
 	//testCriticalPoints ();
 	//testMatrix ();
-	// testFrames ();
+	//testFrames ();
 	//testAffineModel ();
 	//testMotionExtract ();
 	//testMatchFeatures ();
 /*
 	COORDS initial,final;
 	
-	FILE *matchFile = fopen ("C:\\Users\\Gautam\\Desktop\\Project\\Matlab Code\\siftmatches.bin","rb");
+	FILE *matchFile = fopen (".\\TestRepo\\Matlab Code\\siftmatches.bin","rb");
 	
 	fread ((void *) &initial.Number_of_Coordinates,sizeof (int),1,matchFile);
 	final.Number_of_Coordinates = initial.Number_of_Coordinates;
@@ -64,13 +64,13 @@ int main (int argc, char **argv) {
 
 	FILE *outputRotation;
 	char FileName[100];
-	for (int Threshold = 50; Threshold < 950; Threshold+=10) {
-		sprintf (FileName, "C:\\Users\\Gautam\\Desktop\\Project\\02.Test\\Rotation\\Threshold(%d).bin",Threshold);
+	for (int Threshold = 100; Threshold < 150; Threshold+=10) {
+		sprintf (FileName, ".\\TestRepo\\02.Test\\Rotation\\Threshold(%d).bin",Threshold);
 		outputRotation = fopen (FileName, "wb");
 		processFrames (Threshold,outputRotation,false);
 		fclose (outputRotation);
 	}
-	
+
 	
 	return 0;
 }

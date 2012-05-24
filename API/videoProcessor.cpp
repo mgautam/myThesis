@@ -11,7 +11,7 @@ using namespace std;
 
 void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 	FEATURES train;
-	FILE *featureFile = fopen ("C:\\Users\\Gautam\\Desktop\\Project\\01.Training\\07.SIFT_Keys\\train.bin","rb");	
+	FILE *featureFile = fopen (".\\TestRepo\\01.Training\\07.SIFT_Keys\\train.bin","rb");	
 	fread (&(train.FeatureVectorLength),sizeof (int), 1, featureFile);
 	fread (&(train.Number_of_Features),sizeof (int), 1, featureFile);
 	
@@ -33,7 +33,7 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 	COORDS* coordinateMappings;
 	COORDS initial,final;
 	for ( int frameIndex = 0; frameIndex < 100; frameIndex++ ) {
-		sprintf (filename, "C:\\Users\\Gautam\\Desktop\\Project\\02.Test\\07.SIFT_Keys\\testfeature(%d).bin",frameIndex);
+		sprintf (filename, ".\\TestRepo\\02.Test\\07.SIFT_Keys\\testfeature(%d).bin",frameIndex);
 		featureFile = fopen (filename,"rb");	
 		fread (&(test.FeatureVectorLength),sizeof (int), 1, featureFile);
 		fread (&(test.Number_of_Features),sizeof (int), 1, featureFile);
