@@ -6,21 +6,13 @@ MATRIX fitAffineMatrix (COORDS initialPosition, COORDS finalPosition ) {
 	MATRIX initialMatrix = initialAMatrix;
 	MATRIX_CONTENT_TYPE **initialData = initialMatrix.getDataPtr ();
 	for (int row = 0; row < initialPosition.Number_of_Coordinates; row++) {
-		initialData[0][row] = initialPosition.x[row] ;// initialPosition.scores[row]; // Weighting for Weighted Least Squares
-		initialData[1][row] = initialPosition.y[row] ;// initialPosition.scores[row]; // Weighting for Weighted Least Squares
+		initialData[0][row] = initialPosition.x[row];
+		initialData[1][row] = initialPosition.y[row];
 		initialData[2][row] = 1;
 	}
 
 	MATRIX TransposedInitMat = transpose (initialMatrix);
 	
-/*
-	// For Weighted Least Squares
-	for (int row = 0; row < finalPosition.Number_of_Coordinates; row++) {
-		finalPosition.x[row] /= finalPosition.scores[row];
-		finalPosition.y[row] /= finalPosition.scores[row];
-	}
-*/
-
 	MATRIX finalX = MATRIX (finalPosition.x, finalPosition.Number_of_Coordinates);
 	MATRIX finalY = MATRIX (finalPosition.y, finalPosition.Number_of_Coordinates);
 	

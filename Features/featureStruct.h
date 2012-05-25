@@ -3,7 +3,7 @@
 
 typedef struct {
 	double x,y;
-	int *FeatureVector;
+	float *FeatureVector;
 } FEATURE;
 
 typedef struct {

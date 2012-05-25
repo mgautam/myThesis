@@ -1,7 +1,6 @@
 #include <Features/matchFeatures.h>
-#include <stdio.h>
 #include <math.h>
-
+#include <stdio.h>
 COORDS* findNearestNeighbor (FEATURES TrainFeature,FEATURES TestFeature, double Threshold) {
 	int FeatureVectorLength = TrainFeature.FeatureVectorLength; // == TestFeature.FeatureVectorLength
 	int numTrainFeatures = TrainFeature.Number_of_Features;
@@ -18,12 +17,11 @@ COORDS* findNearestNeighbor (FEATURES TrainFeature,FEATURES TestFeature, double 
 	coordinates[1].scores = new double [numTestFeatures];
 
 
+	double maxminDistance = 0; //Remove
 	double Distance,minDistance;
 	int nearNeighborIndex = 0;
-	for ( int TestIndex = 0; TestIndex < numTestFeatures; TestIndex++) { // Change 1000 to numTestFeatures
-		
-		if ( TestIndex % 100 == 0 ) printf ("%d\n",TestIndex); // Remove
-	
+	for ( int TestIndex = 0; TestIndex < numTestFeatures; TestIndex++) {
+
 		coordinates[1].x[nearNeighborIndex] = TestFeature.features[TestIndex].x;
 		coordinates[1].y[nearNeighborIndex] = TestFeature.features[TestIndex].y;
 		minDistance = 99999999999;
@@ -56,10 +54,10 @@ COORDS* findNearestNeighbor (FEATURES TrainFeature,FEATURES TestFeature, double 
 			nearNeighborIndex++;
 			// This is equivalent to adding the nodes no matter how apart the training and test vectors are
 		}				
-
+		if (maxminDistance < minDistance) maxminDistance = minDistance; //Remove
 
 	}
-
+printf ("MaxDistance = %lf\n",maxminDistance);//Remove
 	coordinates[0].Number_of_Coordinates = nearNeighborIndex; // Only the Number of Corresponding nearest Neighbor Training object 2D Position vectors
 	coordinates[1].Number_of_Coordinates = nearNeighborIndex; // Only the Number of Corresponding nearest Neighbor Test object 2D Position vectors
 

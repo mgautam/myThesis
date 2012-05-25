@@ -1,6 +1,6 @@
 #ifndef FEATUREENGINE_H
 #define FEATUREENGINE_H
 
-void BuildFeature (char* imFile, int frameIndex, char* ProjectFolder);
+FEATURES BuildFeature (char *imFileName);
 
 #endif

@@ -12,60 +12,20 @@ using namespace std;
 
 void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 
-	BuildFeature (".\\TestRepo\\00.Test_Images\\lena.bmp", -1, ".\\TestRepo\\01.Training");
-
-	FEATURES train;
-	FILE *featureFile = fopen (".\\TestRepo\\01.Training\\07.Angle_Keys\\train.bin","rb");	
-	fread (&(train.FeatureVectorLength),sizeof (int), 1, featureFile);
-	fread (&(train.Number_of_Features),sizeof (int), 1, featureFile);
-		
-	cout << "Feature Length as Read: " << train.FeatureVectorLength << endl;
-	cout << "Number of Features as Read: " << train.Number_of_Features << endl;
-
-	train.features = new FEATURE [ train.Number_of_Features ];
-	for (int index = 0; index < train.Number_of_Features; index ++) {
-		fread ( &(train.features[index].x), sizeof (double), 1 , featureFile);
-		fread ( &(train.features[index].y), sizeof (double), 1 , featureFile);
-		fseek (featureFile, 2 * sizeof (double), SEEK_CUR); // Skip Reading scale and key orientation
-		train.features[index].FeatureVector = new int[train.FeatureVectorLength];
-		fread ( train.features[index].FeatureVector, sizeof (int), train.FeatureVectorLength , featureFile);
-	}
-
-	fclose (featureFile);
-
+	
+	FEATURES train = BuildFeature (".\\TestRepo\\00.Test_Images\\lena.bmp");;
+	
 
 	FEATURES test;
-	char *filename;
+	char filename[100];
 	COORDS* coordinateMappings;
 	COORDS initial,final;
-	for ( int frameIndex = 50; frameIndex < 75; frameIndex+=25 ) {
-
-		// Extract Sift Features
-		filename = new char[100];
+	for ( int frameIndex = 0; frameIndex < 100; frameIndex++ ) {
 		sprintf (filename, ".\\TestRepo\\00.Test_Images\\Frames\\%d.bmp",frameIndex);
-		cout << endl << filename << endl;
-		BuildFeature (filename, frameIndex, ".\\TestRepo\\02.Test");
+		test = BuildFeature (filename);	
 
-		// Read SiftFeatures (if this works perfectly we could build this in RAM instead of writing to disk to make it faster
-		sprintf (filename, ".\\TestRepo\\02.Test\\07.Angle_Keys\\testFeature(%d).bin",frameIndex);
-		featureFile = fopen (filename,"rb");	
-		fread (&(test.FeatureVectorLength),sizeof (int), 1, featureFile);
-		fread (&(test.Number_of_Features),sizeof (int), 1, featureFile);
 
-		cout << "Feature Length as Read: " << train.FeatureVectorLength << endl;
-		cout << "Number of Features as Read: " << train.Number_of_Features << endl;
-
-		test.features = new FEATURE [ test.Number_of_Features ];
-		for (int featureIndex = 0; featureIndex < test.Number_of_Features; featureIndex ++) {
-			fread ( &(test.features[featureIndex].x), sizeof (double), 1 , featureFile);
-			fread ( &(test.features[featureIndex].y), sizeof (double), 1 , featureFile);
-			fseek (featureFile, 2 * sizeof (double), SEEK_CUR); // Skip Reading scale and key orientation
-			test.features[featureIndex].FeatureVector = new int[test.FeatureVectorLength];
-			fread ( test.features[featureIndex].FeatureVector, sizeof (int), test.FeatureVectorLength , featureFile);
-		}
-		fclose (featureFile);
-
-		coordinateMappings = findNearestNeighbor (train, test, threshold);
+		coordinateMappings = findNearestNeighbor (train,test,threshold);
 		initial = coordinateMappings[0];
 		final = coordinateMappings[1];
 		
@@ -100,12 +60,13 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 		delete coordinateMappings->scores;
 		delete coordinateMappings;
 
-		delete filename;
 	}	
-/*
+
 	// Garbage Collection: Train Feature
+/*
 	for (int featureIndex = 0; featureIndex < test.Number_of_Features; featureIndex ++)
 		delete train.features[featureIndex].FeatureVector;
 	delete train.features;
 */
+
 }

@@ -11,14 +11,14 @@
 
 
 void testDSP (void) {
-	char *imFile = ".\\TestRepo\\00.Test_Images\\lena.bmp";
+	char *srcFile = ".\\TestRepo\\00.Test_Images\\lena.bmp";
 	char *ProjectFolder = TRAIN_FOLDER;
 	IMAGE *visual;
 	GIMAGE *inImage;
 	
 	
 	inImage = createImage(1024,1024,1);
-	visual = readGrey(imFile);
+	visual = readGrey(srcFile);
 	resample(Gtype(visual),2,1,inImage);
 	//inImage = Gtype(readGrey(imageName));//".\\TestRepo\\00.Test_Images\\testSquare.bmp"));
 	GIMAGE**** Pyramid = LaplacianPyramid(inImage, sigma,  numOctaves, numBlurs, ProjectFolder);

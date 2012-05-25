@@ -4,7 +4,7 @@ CFLAGS = -w -I../ -c
 all: Rotation clean
 
 Rotation: AffineTransformer.o bmpAccess.o DSP.o CriticalPoints.o Matrix.o ModelAffine.o MotionExtract.o Features.o API.o main.o
-	$(CC) *.o -o ./Rotation
+	$(CC) *.o -o ../Rotation
 
 AffineTransformer.o: 
 	$(CC) $(CFLAGS) ../AffineTransformer/*.cpp

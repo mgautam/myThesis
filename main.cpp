@@ -15,20 +15,70 @@
 #include <iostream>
 using namespace std;
 
+extern "C" {
+#include <vl/generic.h>
+}
 int main (int argc, char **argv) {
-	// Create Rotation & Translation of smaller objects in a larger image
 	//testImageEngine ();
 	//testDSP ();
 	//testCriticalPoints ();
 	//testMatrix ();
-	testFrames ();
+	//testFrames ();
 	//testAffineModel ();
 	//testMotionExtract ();
 	//testMatchFeatures ();
+/*
+	COORDS initial,final;
 	
-	processFrames (-1,0,false);
+	FILE *matchFile = fopen (".\\TestRepo\\Matlab Code\\siftmatches.bin","rb");
+	
+	fread ((void *) &initial.Number_of_Coordinates,sizeof (int),1,matchFile);
+	final.Number_of_Coordinates = initial.Number_of_Coordinates;
+	
+	initial.x = new double[initial.Number_of_Coordinates];
+	fread ((void *) initial.x,sizeof (double),initial.Number_of_Coordinates,matchFile);
+	initial.y = new double[initial.Number_of_Coordinates];
+	fread ((void *) initial.y,sizeof (double),initial.Number_of_Coordinates,matchFile);
 
-	system ("pause");
+	final.x = new double[final.Number_of_Coordinates];
+	fread ((void *) final.x,sizeof (double),final.Number_of_Coordinates,matchFile);
+	final.y = new double[final.Number_of_Coordinates];
+	fread ((void *) final.y,sizeof (double),final.Number_of_Coordinates,matchFile);
+
+	fclose (matchFile);
+
+
+	cout << "length:" << (int)final.Number_of_Coordinates << endl;
+	cout << "Matches:" << endl;
+	for (int matchIndex = 0; matchIndex < final.Number_of_Coordinates; matchIndex++) {
+		cout << "(" << final.x[matchIndex] << "," << final.y[matchIndex] << ")";
+		cout << " => ";
+		cout << "(" << initial.x[matchIndex] << "," << initial.y[matchIndex] << ")";
+		cout << endl;
+	}
+
+	cout << endl << endl << "AffineFit:" << endl;
+	MATRIX affine = fitAffineMatrix ( initial, final );
+	cout << affine << endl;
+
+	showMotion (affine);
+*/
+
+	VL_PRINT ("Hello world!\n") ;
+	processFrames (0.5,0,false);
+
+/*
+	FILE *outputRotation;
+	char FileName[100];
+	for (int Threshold = 100; Threshold < 150; Threshold+=10) {
+		sprintf (FileName, ".\\TestRepo\\02.Test\\Rotation\\Threshold(%d).bin",Threshold);
+		outputRotation = fopen (FileName, "wb");
+		processFrames (Threshold,outputRotation,false);
+		fclose (outputRotation);
+	}
+*/
+
+	system ("pause") ;
 
 	return 0;
 }
