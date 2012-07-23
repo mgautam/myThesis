@@ -15,9 +15,12 @@ do
 	    if [ -e "$FILE" ]
 	    then
 		echo "Compiling "$FILE"";
-		ccache g++ -c $FILE -I $REL -o $FILE".o"
+		ccache g++ -c -g $FILE -I $REL -o $FILE".o"
 	        mv $FILE".o" .
 	    fi
 	done
     fi
 done
+
+ccache g++ -g *.o ../main.cpp -I $REL -o ../myThesis
+rm *.o
