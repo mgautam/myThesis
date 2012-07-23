@@ -12,10 +12,10 @@ using namespace std;
 
 void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 
-	BuildFeature (".\\TestRepo\\00.Test_Images\\lena.bmp", -1, ".\\TestRepo\\01.Training");
+	BuildFeature ("./TestRepo/00.Test_Images/lena.bmp", -1, "./TestRepo/01.Training");
 /*
 	FEATURES train;
-	FILE *featureFile = fopen (".\\TestRepo\\01.Training\\07.SIFT_Keys\\train.bin","rb");	
+	FILE *featureFile = fopen ("./TestRepo/01.Training/07.SIFT_Keys/train.bin","rb");	
 	fread (&(train.FeatureVectorLength),sizeof (int), 1, featureFile);
 	fread (&(train.Number_of_Features),sizeof (int), 1, featureFile);
 	
@@ -40,12 +40,12 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 
 		// Extrac Sift Features
 		filename = new char[100];
-		sprintf (filename, ".\\TestRepo\\00.Test_Images\\lena.bmp(%d).bmp",frameIndex);
+		sprintf (filename, "./TestRepo/00.Test_Images/lena.bmp(%d).bmp",frameIndex);
 		cout << endl << filename << endl;
-		BuildFeature (filename, frameIndex, ".\\TestRepo\\02.Test");
+		BuildFeature (filename, frameIndex, "./TestRepo/02.Test");
 
 		// Read SiftFeatures (if this works perfectly we could build this in RAM instead of writing to disk to make it faster
-/*		sprintf (filename, ".\\TestRepo\\02.Test\\07.SIFT_Keys\\testFeature(%d).bin",frameIndex);
+/*		sprintf (filename, "./TestRepo/02.Test/07.SIFT_Keys/testFeature(%d).bin",frameIndex);
 		featureFile = fopen (filename,"rb");	
 		fread (&(test.FeatureVectorLength),sizeof (int), 1, featureFile);
 		fread (&(test.Number_of_Features),sizeof (int), 1, featureFile);

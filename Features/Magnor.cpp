@@ -41,9 +41,9 @@ static double bilinearInterpolate (double x, double y, GTYPE *Array, int width, 
 int magoriCalc(GIMAGE *GaussPix, IMAGE *ExPix, int octave, int blur, char *Project_Folder) {
 	FILE *magFile,*oriFile;
 	char filename[MAX_FILE_NAME_LENGTH];
-	sprintf(filename,"%s\\04.Gradient_Pyramid\\%d%d.bin",Project_Folder,octave,blur);
+	sprintf(filename,"%s/04.Gradient_Pyramid/%d%d.bin",Project_Folder,octave,blur);
 	magFile = fopen(filename,"wb");
-	sprintf(filename,"%s\\05.Orientation_Pyramid\\%d%d.bin",Project_Folder,octave,blur);
+	sprintf(filename,"%s/05.Orientation_Pyramid/%d%d.bin",Project_Folder,octave,blur);
 	oriFile = fopen(filename,"wb");
 		
 	GTYPE *Magnitudes = new GTYPE[GaussPix->width*GaussPix->height];
@@ -98,14 +98,14 @@ void siftKeyCalc(IMAGE *ExPix, int numKeys, int octave, int blur, char* Project_
 	GTYPE maxMag, minMag;
 	GTYPE *orientations = new GTYPE[ExPix->width*ExPix->height];
 
-	sprintf(filename,"%s\\04.Gradient_Pyramid\\%d%d.bin",Project_Folder,octave,blur);
+	sprintf(filename,"%s/04.Gradient_Pyramid/%d%d.bin",Project_Folder,octave,blur);
 	magFile = fopen(filename,"rb");
 	fread(&maxMag,sizeof(GTYPE),1,magFile);
 	fread(&minMag,sizeof(GTYPE),1,magFile);
 	fread(Magnitudes,sizeof(GTYPE),ExPix->width*ExPix->height,magFile);
 	fclose(magFile);
 
-	sprintf(filename,"%s\\05.Orientation_Pyramid\\%d%d.bin",Project_Folder,octave,blur);
+	sprintf(filename,"%s/05.Orientation_Pyramid/%d%d.bin",Project_Folder,octave,blur);
 	oriFile = fopen(filename,"rb");
 	fread(orientations,sizeof(GTYPE),ExPix->width*ExPix->height,oriFile);
 	fclose(oriFile);
@@ -218,7 +218,7 @@ void siftKeyCalc(IMAGE *ExPix, int numKeys, int octave, int blur, char* Project_
 	}
 	cout << "\t\tKeys with Orientation = " << keyIndex << endl;
 	FILE *keyFile;
-	sprintf(filename,"%s\\07.SIFT_Keys\\%d%d.bin",Project_Folder,octave,blur);
+	sprintf(filename,"%s/07.SIFT_Keys/%d%d.bin",Project_Folder,octave,blur);
 	keyFile = fopen(filename,"wb");
 	fwrite(&keyIndex,sizeof(int),1,keyFile);
 	fwrite(keyDescriptors,sizeof(siftKey),keyIndex,keyFile);
@@ -236,8 +236,8 @@ void writeAllSift (GTYPE sigma, int numOctaves, int numBlurs, char *PROJECT_FOLD
 	GTYPE scale;
 	char filename[MAX_FILE_NAME_LENGTH];
 
-	if (frameIndex == -1) sprintf (filename,"%s\\07.SIFT_Keys\\train.bin",PROJECT_FOLDER);
-	else sprintf (filename,"%s\\07.SIFT_Keys\\testFeature(%d).bin",PROJECT_FOLDER,frameIndex);
+	if (frameIndex == -1) sprintf (filename,"%s/07.SIFT_Keys/train.bin",PROJECT_FOLDER);
+	else sprintf (filename,"%s/07.SIFT_Keys/testFeature(%d).bin",PROJECT_FOLDER,frameIndex);
 	cout << filename << endl;
 	FILE *AllKeyFile = fopen (filename,"wb");
 
@@ -247,7 +247,7 @@ void writeAllSift (GTYPE sigma, int numOctaves, int numBlurs, char *PROJECT_FOLD
 	
 	for (int i = 0; i < numOctaves; i++)
 		for (int j = 1; j < numBlurs-2; j++) {
-			sprintf(filename,"%s\\07.SIFT_Keys\\%d%d.bin",PROJECT_FOLDER,i,j);
+			sprintf(filename,"%s/07.SIFT_Keys/%d%d.bin",PROJECT_FOLDER,i,j);
 			keyFile = fopen(filename,"rb");
 			fread(&numKeys,sizeof(int),1,keyFile);
 			keyDescriptors = new siftKey[numKeys];
