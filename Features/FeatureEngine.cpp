@@ -47,7 +47,7 @@ void BuildFeature (char* imFile, int frameIndex, char* ProjectFolder) {
 
 			extremeImage = createimage( Pyramid[1][i][j]->width, Pyramid[1][i][j]->height , 1 );
 			numExtrema += findExtrema(Pyramid[1][i][j],lowImage,highImage,extremeImage);
-			sprintf(fileName,"%s\\03.Extreme_Pyramid\\Image_Xterm(%d%d).bmp",ProjectFolder,i,j);
+			sprintf(fileName,"%s/03.Extreme_Pyramid/Image_Xterm(%d%d).bmp",ProjectFolder,i,j);
 			writeImage(fileName,extremeImage);
 
 			inImage = Pyramid[0][i][j];//j-1?

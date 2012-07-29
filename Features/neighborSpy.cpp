@@ -64,9 +64,9 @@ static int* cyclicConv (int *Sequence, double spread) {
 int magoriCalc(GIMAGE *GaussPix, IMAGE *ExPix, int octave, int blur, char *Project_Folder) {
 	FILE *magFile,*oriFile;
 	char filename[MAX_FILE_NAME_LENGTH];
-	sprintf(filename,"%s\\04.Gradient_Pyramid\\%d%d.bin",Project_Folder,octave,blur);
+	sprintf(filename,"%s/04.Gradient_Pyramid/%d%d.bin",Project_Folder,octave,blur);
 	magFile = fopen(filename,"wb");
-	sprintf(filename,"%s\\05.Orientation_Pyramid\\%d%d.bin",Project_Folder,octave,blur);
+	sprintf(filename,"%s/05.Orientation_Pyramid/%d%d.bin",Project_Folder,octave,blur);
 	oriFile = fopen(filename,"wb");
 		
 	GTYPE *Magnitudes = new GTYPE[GaussPix->width*GaussPix->height];
@@ -164,14 +164,14 @@ void angleKeyCalc(IMAGE *ExPix, int numKeys, int octave, int blur, char* Project
 	GTYPE maxMag, minMag;
 	GTYPE *orientations = new GTYPE[ExPix->width*ExPix->height];
 
-	sprintf(filename,"%s\\04.Gradient_Pyramid\\%d%d.bin",Project_Folder,octave,blur);
+	sprintf(filename,"%s/04.Gradient_Pyramid/%d%d.bin",Project_Folder,octave,blur);
 	magFile = fopen(filename,"rb");
 	fread(&maxMag,sizeof(GTYPE),1,magFile);
 	fread(&minMag,sizeof(GTYPE),1,magFile);
 	fread(Magnitudes,sizeof(GTYPE),ExPix->width*ExPix->height,magFile);
 	fclose(magFile);
 
-	sprintf(filename,"%s\\05.Orientation_Pyramid\\%d%d.bin",Project_Folder,octave,blur);
+	sprintf(filename,"%s/05.Orientation_Pyramid/%d%d.bin",Project_Folder,octave,blur);
 	oriFile = fopen(filename,"rb");
 	fread(orientations,sizeof(GTYPE),ExPix->width*ExPix->height,oriFile);
 	fclose(oriFile);
@@ -254,7 +254,10 @@ void angleKeyCalc(IMAGE *ExPix, int numKeys, int octave, int blur, char* Project
 							AngleDescriptor[keyIndex].sectorCount[i] = tempPtr[i];
 						delete tempPtr;
 */					}				
-					if (totalNeighbors > 10) keyIndex++;
+					if (totalNeighbors > 10) {
+						//cout << totalNeighbors << "\t";
+						keyIndex++;
+					}
 				}				
 			}
 		}
@@ -262,7 +265,7 @@ void angleKeyCalc(IMAGE *ExPix, int numKeys, int octave, int blur, char* Project
 	
 	cout << "\t\tKeys with Orientation = " << keyIndex << endl;
 	FILE *keyFile;
-	sprintf(filename,"%s\\07.Angle_Keys\\%d%d.bin",Project_Folder,octave,blur);
+	sprintf(filename,"%s/07.Angle_Keys/%d%d.bin",Project_Folder,octave,blur);
 	keyFile = fopen(filename,"wb");
 	fwrite(&keyIndex,sizeof(int),1,keyFile);
 	fwrite(AngleDescriptor,sizeof(angleKey),keyIndex,keyFile);
@@ -289,8 +292,8 @@ void writeAllSift (GTYPE sigma, int numOctaves, int numBlurs, char *PROJECT_FOLD
 	angleKey *AngleDescriptor;
 	char filename[MAX_FILE_NAME_LENGTH];
 
-	if (frameIndex == -1) sprintf (filename,"%s\\07.Angle_Keys\\train.bin",PROJECT_FOLDER);
-	else sprintf (filename,"%s\\07.Angle_Keys\\testFeature(%d).bin",PROJECT_FOLDER,frameIndex);
+	if (frameIndex == -1) sprintf (filename,"%s/07.Angle_Keys/train.bin",PROJECT_FOLDER);
+	else sprintf (filename,"%s/07.Angle_Keys/testFeature(%d).bin",PROJECT_FOLDER,frameIndex);
 	FILE *AllKeyFile = fopen (filename,"wb");
 
 	int featurelength = FEATURE_LENGTH;
@@ -299,7 +302,7 @@ void writeAllSift (GTYPE sigma, int numOctaves, int numBlurs, char *PROJECT_FOLD
 	
 	for (int i = 0; i < numOctaves; i++)
 		for (int j = 1; j < numBlurs-2; j++) {
-			sprintf(filename,"%s\\07.Angle_Keys\\%d%d.bin",PROJECT_FOLDER,i,j);
+			sprintf(filename,"%s/07.Angle_Keys/%d%d.bin",PROJECT_FOLDER,i,j);
 			keyFile = fopen(filename,"rb");
 			fread(&numKeys,sizeof(int),1,keyFile);
 			AngleDescriptor = new angleKey[numKeys];

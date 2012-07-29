@@ -15,8 +15,10 @@
 #include <iostream>
 using namespace std;
 
+#include <stdlib.h>
+
 int main (int argc, char **argv) {
-	// Create Rotation & Translation of smaller objects in a larger image
+	//Create Rotation & Translation of smaller objects in a larger image
 	//testImageEngine ();
 	//testDSP ();
 	//testCriticalPoints ();
@@ -26,7 +28,7 @@ int main (int argc, char **argv) {
 	//testMotionExtract ();
 	//testMatchFeatures ();
 	
-	processFrames (-1,0,true);
+	processFrames (-1,0,false);
 
 	system ("pause");
 
