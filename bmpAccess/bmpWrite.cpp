@@ -9,7 +9,6 @@
 #define MULTIPLY_BYTE_POSITION (2<<((8*byteIndex)))/2 /* why /2 is required? */
 
 void writeFileHeader(FILE *fhandle, FileHeader fileHeader, bool printInfo) {
-	void *wnullDump;
 
 	char *bmtype = new char[3];
 	strcpy(bmtype,"BM");
@@ -28,6 +27,7 @@ void writeFileHeader(FILE *fhandle, FileHeader fileHeader, bool printInfo) {
 
 	//wnullDump = new char[5];
 	//sprintf((char *)wnullDump,"0000");
+	int *wnullDump;
 	wnullDump = new int(0);
 	fwrite(wnullDump,sizeof(char),FOUR_BYTES,fhandle);
 	delete wnullDump;

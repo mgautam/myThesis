@@ -13,7 +13,7 @@ using namespace std;
 using namespace std;
 
 void readFileHeader(FILE *fhandle, FileHeader *fileHeader, bool printInfo) {
-	void *nullDump;//I don't have to care about the data structure hence I use void *
+	unsigned char *nullDump;//I don't have to care about the data structure hence I use void *
 	
 	char *bmtype = new char[3];
 	fread(bmtype,sizeof(char),TWO_BYTES,fhandle);
@@ -134,7 +134,7 @@ void readDataHeader(FILE *fhandle, BMPHeader *bmpHeader, bool printInfo) {
 }
 
 IMAGE* readRaster(FILE *fhandle,FileHeader *fileHeader, BMPHeader *bmpHeader, bool printInfo) {
-	void *nullDump;//I don't have to care about the data structure hence I use void *
+	unsigned char *nullDump;//I don't have to care about the data structure hence I use void *
 	int numPixels = (int)(bmpHeader->BMPwidth*bmpHeader->BMPheight);
 
 	IMAGE *image = new IMAGE;
@@ -162,7 +162,7 @@ IMAGE* readRaster(FILE *fhandle,FileHeader *fileHeader, BMPHeader *bmpHeader, bo
 
 IMAGE* readLuminance(FILE *fhandle, FileHeader *fileHeader, BMPHeader *bmpHeader, bool printInfo)
 {
-	void *nullDump;//I don't have to care about the data structure hence I use void *
+	unsigned char *nullDump;//I don't have to care about the data structure hence I use void *
 	int numPixels = (int)(bmpHeader->BMPwidth*bmpHeader->BMPheight);
 	
 	int input_numColors = bmpHeader->bitCount/8;

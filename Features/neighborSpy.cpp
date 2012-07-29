@@ -3,7 +3,7 @@
 #include<math.h>
 
 #include <DSP/filter.h>
-#include <FEATURES/neighborSpy.h>
+#include <Features/neighborSpy.h>
 
 #define MAX_FILE_NAME_LENGTH 100
 

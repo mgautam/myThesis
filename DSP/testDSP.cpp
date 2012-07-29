@@ -1,3 +1,6 @@
+#include <iostream>
+using namespace std;
+
 #include <DSP/resample.h>
 #include <DSP/Pyramids.h>
 #include <DSP/testDSP.h>

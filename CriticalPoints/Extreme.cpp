@@ -1,8 +1,8 @@
-#include <DSP/Pyramids.h>
-#include <CriticalPoints/Extreme.h>
-
 #include <iostream>
 using namespace std;
+
+#include <DSP/Pyramids.h>
+#include <CriticalPoints/Extreme.h>
 
 // A pixel's Neighbouring pixels in same scale
 #define NUMBER_OF_NEIGHBORS 8

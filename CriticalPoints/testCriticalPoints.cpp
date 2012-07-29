@@ -1,12 +1,12 @@
+#include <stdio.h>
+#include <iostream>
+using namespace std;
+
 #include <DSP/resample.h>
 #include <DSP/Pyramids.h>
 #include <CriticalPoints/Extreme.h>
 #include <CriticalPoints/testCriticalPoints.h>
 #include <bmpAccess/bmpEngine.h>
-
-#include <stdio.h>
-#include <iostream>
-using namespace std;
 
 #define TRAIN_FOLDER "./TestRepo/01.Training"
 #define TEST_FOLDER "./TestRepo/02.Test"

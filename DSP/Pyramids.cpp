@@ -1,14 +1,16 @@
 //Not Optimized
 
+#include <stdio.h>
+#include <iostream>
+#include <math.h>
+using namespace std;
+
+
 #include <bmpAccess/bmpEngine.h>
 #include <DSP/filter.h>
 #include <DSP/resample.h>
 #include <DSP/Pyramids.h>
 
-#include <stdio.h>
-#include <iostream>
-#include <math.h>
-using namespace std;
 
  GIMAGE** GaussianPyramid(GIMAGE *inImage, GTYPE stepSize, int numLayers, char *PROJECT_FOLDER) {
 	cout << "\t Gaussian Pyramid Formation Begins Now" << endl;
