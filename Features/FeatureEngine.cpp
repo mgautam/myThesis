@@ -78,7 +78,7 @@ FEATURES BuildFeature (char *imFileName) {
 	releaseImage (inImage);
 
 
-	showStats ( FeatureHeap );
+	//showStats ( FeatureHeap );
 
 	return *FeatureHeap;
 }

@@ -65,7 +65,7 @@ int main (int argc, char **argv) {
 */
 
 	VL_PRINT ("Hello world!\n") ;
-	processFrames (0.5,0,false);
+	processFrames (0.3,0,false);
 
 /*
 	FILE *outputRotation;
