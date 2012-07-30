@@ -1,5 +1,6 @@
 #include <bmpAccess/testImageEngine.h>
 #include <DSP/testDSP.h>
+#include <DSP/testnoise.h>
 #include <CriticalPoints/testCriticalPoints.h>
 #include <Matrix/testMatrix.h>
 #include <AffineTransformer/testFrames.h>
@@ -20,15 +21,16 @@ using namespace std;
 int main (int argc, char **argv) {
 	//Create Rotation & Translation of smaller objects in a larger image
 	//testImageEngine ();
+	testNoise ();
 	//testDSP ();
 	//testCriticalPoints ();
 	//testMatrix ();
-	testFrames ();
+	//testFrames ();
 	//testAffineModel ();
 	//testMotionExtract ();
 	//testMatchFeatures ();
 	
-	processFrames (-1,0,false);
+	//processFrames (-1,0,false);
 
 	system ("pause");
 
