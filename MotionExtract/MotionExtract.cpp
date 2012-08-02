@@ -21,7 +21,8 @@ void showMotion (MATRIX AffineMatrix, FILE *output) {
 	double bx = AffineMatrixData[2][0] - (cosX*512 + sinX*512);
 	double by = AffineMatrixData[2][1] - (-sinX*512 + cosX*512);
 
-	printf ("Rotation: %6.3lf = %6.3lf Translation: ( x: %8.3lf , y: %8.3lf )\n", theta, atan (sinX/cosX), bx, by);
+	//printf ("Rotation: %6.3lf = %6.3lf Translation: ( x: %8.3lf , y: %8.3lf )\n", theta, 6.28-theta, bx, by);//atan (sinX/cosX)//asin (sinX)
+	printf ("Rotation: %6.3lf = %6.3lf = %6.3lf = %6.3lf \n", theta, asin (sinX), atan2 (sinX,cosX), 6.28-theta );
 	
 	if (output) 
 		fwrite (&theta, sizeof (double), 1, output);

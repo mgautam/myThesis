@@ -72,7 +72,8 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 		MATRIX affine = fitAffineMatrix ( initial, final );
 		if (printInfo) cout << affine << endl;
 
-		printf ("Frame: %2d  ", frameIndex);
+		//printf ("Frame: %2d  ", frameIndex);
+		printf ("Frame: %2d  Actual: %6.3lf  ", frameIndex,2*3.14*(double)frameIndex/(double)100);
 		showMotion (affine,  RotationDataFile);
 
 		// Garbage Collection: Test Feature
