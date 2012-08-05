@@ -4,6 +4,7 @@
 #include <CriticalPoints/testCriticalPoints.h>
 #include <Matrix/testMatrix.h>
 #include <AffineTransformer/testFrames.h>
+#include <AffineTransformer/frames.h>
 #include <ModelAffine/testAffineFit.h>
 #include <MotionExtract/testMotionExtract.h>
 #include <Features/testMatchFeatures.h>
@@ -21,7 +22,7 @@ using namespace std;
 int main (int argc, char **argv) {
 	//Create Rotation & Translation of smaller objects in a larger image
 	//testImageEngine ();
-	testNoise ();
+	//testNoise ();
 	//testDSP ();
 	//testCriticalPoints ();
 	//testMatrix ();
@@ -30,7 +31,9 @@ int main (int argc, char **argv) {
 	//testMotionExtract ();
 	//testMatchFeatures ();
 	
-	//processFrames (-1,0,false);
+	int translation[2] = {0,0};
+	createFrames ("./TestRepo/00.Test_Images/lena.bmp", "./TestRepo/00.Test_Images/Frames", translation, 100);//,"./TestRepo/00.Test_Images/lena.bmp");
+	processFrames (-1,0,false);
 
 	system ("pause");
 

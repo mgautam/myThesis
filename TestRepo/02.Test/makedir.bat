@@ -6,4 +6,5 @@ mkdir "05.Orientation_Pyramid"
 mkdir "06.Mag_Pyramid"
 mkdir "07.Angle_Keys"
 mkdir "08.MagOri_Pyramid2"
+mkdir "KeysinFrame"
 pause

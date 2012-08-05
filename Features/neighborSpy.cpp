@@ -73,20 +73,32 @@ int magoriCalc(GIMAGE *GaussPix, IMAGE *ExPix, int octave, int blur, char *Proje
 	GTYPE maxMag = MIN_PIXEL_VALUE, minMag = MAX_PIXEL_VALUE;
 	GTYPE *orientations = new GTYPE[GaussPix->width*GaussPix->height];
 	
+	GTYPE tempOri = 0;
 	for(int n1 = 0; n1 < GaussPix->height-1; n1++) {
 		for(int n2 = 0; n2 < GaussPix->width-1; n2++) {
-			Magnitudes[n1*GaussPix->width+n2] = sqrt(pow(GTYPE(GaussPix->imageData[n1*GaussPix->width+n2]-GaussPix->imageData[(n1+1)*GaussPix->width+n2]),2) 
+			Magnitudes[n1*GaussPix->width+n2] = sqrt( pow( GTYPE( GaussPix->imageData[n1*GaussPix->width+n2] - GaussPix->imageData[(n1+1)*GaussPix->width+n2] ) , 2 ) 
 				+ pow(GTYPE(GaussPix->imageData[n1*GaussPix->width+n2]-GaussPix->imageData[n1*GaussPix->width+n2+1]),2));
-			if(Magnitudes[n1*GaussPix->width+n2] > maxMag) maxMag = Magnitudes[n1*GaussPix->width+n2];
-			if(Magnitudes[n1*GaussPix->width+n2] < minMag) minMag = Magnitudes[n1*GaussPix->width+n2];			
+			
+			if(Magnitudes[n1*GaussPix->width+n2] > maxMag) 
+				maxMag = Magnitudes[n1*GaussPix->width+n2];
+			
+			if(Magnitudes[n1*GaussPix->width+n2] < minMag) 
+				minMag = Magnitudes[n1*GaussPix->width+n2];			
 
-			orientations[n1*GaussPix->width+n2] = atan2(GTYPE(GaussPix->imageData[n1*GaussPix->width+n2]-GaussPix->imageData[(n1+1)*GaussPix->width+n2]), 
+			tempOri = atan2(GTYPE(GaussPix->imageData[n1*GaussPix->width+n2]-GaussPix->imageData[(n1+1)*GaussPix->width+n2]), 
 				GTYPE(GaussPix->imageData[n1*GaussPix->width+n2]-GaussPix->imageData[n1*GaussPix->width+n2+1]));			
+
+			// aren't the orientations given by atan only distributed between -pi/2 to pi/2
+			// How can we say that they occupy the whole 2*pi space
+			if (tempOri < 0)
+				orientations[n1*GaussPix->width+n2] = tempOri + 2*pi;
+			else
+				orientations[n1*GaussPix->width+n2] = tempOri;
 		}
 		Magnitudes[n1*GaussPix->width+GaussPix->width-1] = 0;
 	}
 	for(int n2 = 0; n2 < GaussPix->width; n2++)
-		Magnitudes[(GaussPix->height-1)*GaussPix->width+GaussPix->width-1] = 0;
+		Magnitudes[(GaussPix->height-1)*GaussPix->width+n2] = 0;
 			
 	fwrite(&maxMag,sizeof(GTYPE),1,magFile);
 	fwrite(&minMag,sizeof(GTYPE),1,magFile);
@@ -107,7 +119,7 @@ int magoriCalc(GIMAGE *GaussPix, IMAGE *ExPix, int octave, int blur, char *Proje
 
 	delete Magnitudes;
 
-	cout << "\t\tStable Keypoints: " << numKeys << endl;
+//	cout << "\t\tStable Keypoints: " << numKeys << endl;
 	return numKeys;	
 }
 
@@ -119,12 +131,16 @@ void angleKeyCalc(IMAGE *ExPix, int numKeys, int octave, int blur, char* Project
 	
 	// Sector Mask (Window) Initialization
 	int ***sectorWindow = new int**[number_of_sectors];
-	for (int sectorIndex = 0; sectorIndex < number_of_sectors; sectorIndex++) {
+	for (int sectorIndex = 0; sectorIndex < number_of_sectors; sectorIndex++) 
+	{
 		sectorWindow[sectorIndex] = new int*[2*window_radius];
-		for(int k1 = -window_radius; k1 < window_radius; k1++) {
+		for(int k1 = -window_radius; k1 < window_radius; k1++) 
+		{
 			sectorWindow[sectorIndex][k1+window_radius] = new int[2*window_radius];
 			for(int k2 = -window_radius; k2 < window_radius; k2++)
+			{
 				sectorWindow[sectorIndex][k1+window_radius][k2+window_radius] = 0;
+			}
 		}
 	} 
 
@@ -183,29 +199,39 @@ void angleKeyCalc(IMAGE *ExPix, int numKeys, int octave, int blur, char* Project
 
 	angleKey *AngleDescriptor = new angleKey[(int)(NUMBER_OF_ORIENTATION_BINS_I*numKeys)];
 	int keyIndex = 0;
-	GTYPE Magnif = 1.0 / pow(2.0,octave);
+	GTYPE Magnif = 1.0;//1.0 / pow(2.0,octave);
 	GTYPE stdev = 1.5 * Magnif;
 	int sectorOffset = 0;
 	int totalNeighbors = 0;
 	int *tempPtr = 0;
-	for(int n1 = 0; n1 < (ExPix->height)-1; n1++) {
-		for(int n2 = 0; n2 < (ExPix->width)-1; n2++) {
+	for(int n1 = 0; n1 < (ExPix->height)-1; n1++) 
+	{
+		for(int n2 = 0; n2 < (ExPix->width)-1; n2++) 
+		{
 			
-			if(ExPix->imageData[n1*ExPix->width+n2] == MAX_PIXEL_VALUE ) {
-
+			if(ExPix->imageData[n1*ExPix->width+n2] == MAX_PIXEL_VALUE ) 
+			{
 				for(int i = 0; i < NUMBER_OF_ORIENTATION_BINS_I; i++) 
 						oriBins[i] = 0;
 					
-				// aren't the orientations given by atan only distributed between -pi/2 to pi/2
-				// How can we say that they occupy the whole 2*pi space
-					for(float k1=-3.5; k1 < 4; k1++)
-						for(float k2=-3.5; k2 < 4; k2++)
-							if((n1+k1*Magnif) > 0 && (n1+k1*Magnif) < ExPix->height && (n2+k2*Magnif) > 0 && (n2+k2*Magnif) < ExPix->width)
+				
+					for(int k1=-3.5; k1 < 4; k1++)
+						for(int k2=-3.5; k2 < 4; k2++)
+							if((n1+k1*Magnif) > 0 && (n1+k1*Magnif) < ExPix->height && (n2+k2*Magnif) > 0 && (n2+k2*Magnif) < ExPix->width) {
+
+								oriBins[(int) (orientations[(n1+k1)*ExPix->width +(n2+k2)]/(2.0*pi) * NUMBER_OF_ORIENTATION_BINS_I)] 
+										+= Magnitudes[(n1+k1)*ExPix->width +(n2+k2)]
+											* exp(-pow((GTYPE)k1*Magnif,2)/(2.0*pow(stdev,2)))/(stdev*sqrt(2.0*pi))
+												* exp(-pow((GTYPE)k2*Magnif,2)/(2.0*pow(stdev,2)))/(stdev*sqrt(2.0*pi));
+								
+								
+								/*
 								oriBins[(int) ((bilinearInterpolate ((n1+k1*Magnif),(n2+k2*Magnif),orientations,ExPix->width,ExPix->height)/(2.0*pi) + 0.5) * NUMBER_OF_ORIENTATION_BINS_I)] 
 										+= bilinearInterpolate ((n1+k1*Magnif),(n2+k2*Magnif),Magnitudes,ExPix->width,ExPix->height)
 											* exp(-pow((GTYPE)k1*Magnif,2)/(2.0*pow(stdev,2)))/(stdev*sqrt(2.0*pi))
 												* exp(-pow((GTYPE)k2*Magnif,2)/(2.0*pow(stdev,2)))/(stdev*sqrt(2.0*pi));
-										
+								*/
+							}
 
 					double maxBin = 0;
 					for(int i=0; i < NUMBER_OF_ORIENTATION_BINS_I; i++)
@@ -214,30 +240,36 @@ void angleKeyCalc(IMAGE *ExPix, int numKeys, int octave, int blur, char* Project
 					
 					int numMax = 0;
 					AngleDescriptor[keyIndex].KeyOrientation = 0;
-					for(int i=0; i < NUMBER_OF_ORIENTATION_BINS_I; i++)
-						if(oriBins[i] > PEAK_THRESHOLD * maxBin) {
-							AngleDescriptor[keyIndex+numMax].KeyOrientation = (((double) i) / NUMBER_OF_ORIENTATION_BINS_I - 0.5)*(2*pi);
+					for(int i=0; i < NUMBER_OF_ORIENTATION_BINS_I; i++) 
+						if(oriBins[i] > PEAK_THRESHOLD * maxBin)
+						{
+							//AngleDescriptor[keyIndex+numMax].KeyOrientation = (((double) i) / NUMBER_OF_ORIENTATION_BINS_I - 0.5)*(2*pi);
+							AngleDescriptor[keyIndex+numMax].KeyOrientation = (((double) i) / NUMBER_OF_ORIENTATION_BINS_I)*(2*pi);
 							numMax++;						
 						}
 
 				int subIndex = 0;
-				for ( ; subIndex < numMax; subIndex++ ) {
-
-					AngleDescriptor[keyIndex].x = n1;
-					AngleDescriptor[keyIndex].y = n2;
-					AngleDescriptor[keyIndex].scale = Magnif;
+				for ( ; subIndex < numMax; subIndex++ ) 
+				{
+					AngleDescriptor[keyIndex].y = (double)n1 * pow(2.0,octave-1);//before without pow
+					AngleDescriptor[keyIndex].x = (double)n2 * pow(2.0,octave-1);//before without pow
+					AngleDescriptor[keyIndex].scale = 0.121212;//1.0 / pow(2.0,octave);//Magnif;
 					
 					// Check whether I have to change the offset to KeyOrientation as -pi/2 < atanX < pi/2
-					sectorOffset = (int) ((AngleDescriptor[keyIndex].KeyOrientation + pi)* number_of_sectors / (2.0*pi));
+					sectorOffset = (int) ((AngleDescriptor[keyIndex].KeyOrientation)* number_of_sectors / (2.0*pi));
+					//sectorOffset = (int) ((AngleDescriptor[keyIndex].KeyOrientation + pi)* number_of_sectors / (2.0*pi));
 
 					int totalNeighbors = 0;
-					for (int sectorIndex = 0 ; sectorIndex < number_of_sectors; sectorIndex++) {
+					for (int sectorIndex = 0 ; sectorIndex < number_of_sectors; sectorIndex++)
+					{
 						AngleDescriptor[keyIndex].sectorCount[sectorIndex] = 0;
 						for (int k1 = -window_radius; k1 < window_radius; k1++)
 							for (int k2 = -window_radius; k2 < window_radius; k2++)
 							// I should be able to add single side edges
 								if ( n1 + k1 < (ExPix->height - 1) && n1 + k1 >= 0)
-									if ( n2 + k2 < (ExPix->width - 1) && n2 + k2 >= 0) {
+									if ( n2 + k2 < (ExPix->width - 1) && n2 + k2 >= 0) 
+									{
+										// Number of stable points in each sector. Sector is taken relative to the key orientation
 										AngleDescriptor[keyIndex].sectorCount[sectorIndex] 
 											+= ExPix->imageData[(n1+k1)*ExPix->width+(n2+k2)] 
 												* sectorWindow[(sectorIndex + sectorOffset) % number_of_sectors][k1+window_radius][k2+window_radius];
@@ -246,7 +278,7 @@ void angleKeyCalc(IMAGE *ExPix, int numKeys, int octave, int blur, char* Project
 						totalNeighbors += AngleDescriptor[keyIndex].sectorCount[sectorIndex];
 
 						// Polynomial Separation
-						AngleDescriptor[keyIndex].sectorCount[sectorIndex] *= AngleDescriptor[keyIndex].sectorCount[sectorIndex] + 1;
+						//AngleDescriptor[keyIndex].sectorCount[sectorIndex] *= AngleDescriptor[keyIndex].sectorCount[sectorIndex] + 1;
 /*						
 						// Noise Reduction
 						tempPtr = cyclicConv (AngleDescriptor[keyIndex].sectorCount,3.0);
@@ -254,7 +286,8 @@ void angleKeyCalc(IMAGE *ExPix, int numKeys, int octave, int blur, char* Project
 							AngleDescriptor[keyIndex].sectorCount[i] = tempPtr[i];
 						delete tempPtr;
 */					}				
-					if (totalNeighbors > 10) {
+					if (totalNeighbors > 10) 
+					{
 						//cout << totalNeighbors << "\t";
 						keyIndex++;
 					}
@@ -263,7 +296,7 @@ void angleKeyCalc(IMAGE *ExPix, int numKeys, int octave, int blur, char* Project
 		}
 	}
 	
-	cout << "\t\tKeys with Orientation = " << keyIndex << endl;
+//	cout << "\t\tKeys with Orientation = " << keyIndex << endl;
 	FILE *keyFile;
 	sprintf(filename,"%s/07.Angle_Keys/%d%d.bin",Project_Folder,octave,blur);
 	keyFile = fopen(filename,"wb");
@@ -286,7 +319,7 @@ void angleKeyCalc(IMAGE *ExPix, int numKeys, int octave, int blur, char* Project
 }
 
 
-void writeAllSift (GTYPE sigma, int numOctaves, int numBlurs, char *PROJECT_FOLDER, int frameIndex) {
+void writeAllFeatures (GTYPE sigma, int numOctaves, int numBlurs, char *PROJECT_FOLDER, int frameIndex) {
 	FILE *keyFile;
 	int numKeys,totalKeys = 0;
 	angleKey *AngleDescriptor;

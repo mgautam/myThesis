@@ -37,9 +37,12 @@ void BuildFeature (char* imFile, int frameIndex, char* ProjectFolder) {
 
 
 	for(int i = 0; i < numOctaves; i++)
-		for(int j = 1; j < numBlurs-2; j++){
+	{
+		cout << "\t   Octave " << i+1 << "/" << numOctaves ;
+		for(int j = 1; j < numBlurs-2; j++)
+		{
 
-			cout << "\t   Octave " << i+1 << "/" << numOctaves << "\t Blur " << 1 << "/" << numBlurs << endl;
+			cout << "\t Blur " << j << "/" << numBlurs;
 
 			highImage = Pyramid[1][i][j-1];
 
@@ -50,15 +53,16 @@ void BuildFeature (char* imFile, int frameIndex, char* ProjectFolder) {
 			sprintf(fileName,"%s/03.Extreme_Pyramid/Image_Xterm(%d%d).bmp",ProjectFolder,i,j);
 			writeImage(fileName,extremeImage);
 
-			inImage = Pyramid[0][i][j];//j-1?
-			numKeys = magoriCalc(inImage,extremeImage,i,j,ProjectFolder);
+			inImage = Pyramid[0][i][j];//j-1?// This should also be laplacian right?No
+			numKeys = magoriCalc(inImage,extremeImage,i,j,ProjectFolder); // numKeys => Number of stable keys
 			angleKeyCalc(extremeImage, numKeys, i,j,ProjectFolder);		
 			
-		
 			//visualExtreme(extremeImage, i,j,ProjectFolder);
 			//visual2(inImage->width, inImage->height, i,j,ProjectFolder);	
 			releaseImage(extremeImage);
 			totKeys += numKeys;
+		}
+		cout << endl;
 	}
 		
 	// Garbage collection:Pyramid
@@ -76,7 +80,7 @@ void BuildFeature (char* imFile, int frameIndex, char* ProjectFolder) {
 	delete Pyramid[1];
 	delete Pyramid;
 
-	writeAllSift(sigma,numOctaves,numBlurs,ProjectFolder,frameIndex);
+	writeAllFeatures(sigma,numOctaves,numBlurs,ProjectFolder,frameIndex);
 	//visual3(*visual,ProjectFolder);
 	cout << "Total Number of Keys: "<< totKeys << " Extrema: " << numExtrema << endl;
 		
