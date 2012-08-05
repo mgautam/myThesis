@@ -2,16 +2,16 @@ clear all
 close all
 clc
 
-run 'C:\Users\Gautam\Desktop\vlfeat\toolbox\vl_setup.m';
+run 'vlfeat-0.9.14\toolbox\vl_setup.m';
 
 %SIFT descriptors are often used find similar regions in two images.
 % vl_ubcmatch implements a basic matching algorithm.
 % Let Ia and Ib be images of the same object or scene. We extract and match the descriptors by:
-Ia = single(rgb2gray(imread('C:\Users\Gautam\Desktop\Project\00.Test_Images\lena.bmp')));
+Ia = single(rgb2gray(imread('..\00.Test_Images\checkeredball.bmp')));
 [fa, da] = vl_sift (Ia) ;
 siz=size(da);
 
-featureFile = fopen ('C:\Users\Gautam\Desktop\Project\01.Training\07.SIFT_Keys\train.bin','w');
+featureFile = fopen ('..\..\TestRepo\01.Training\07.SIFT_Keys\train.bin','w');
 fwrite (featureFile,siz,'uint32');
 
 for i = 1:siz(2)
@@ -24,18 +24,18 @@ fclose (featureFile);
 
 for i = 0:99
     
-    filename = sprintf('C:\\Users\\Gautam\\Desktop\\Project\\00.Test_Images\\lena.bmp(%d).bmp',i);
+    filename = sprintf('..\\..\\TestRepo\\00.Test_Images\\Frames\\%d.bmp',i);
     Ib = single(imread(filename));
     [fb, db] = vl_sift (Ib) ;
     siz=size(db);
     
-    filename = sprintf('C:\\Users\\Gautam\\Desktop\\Project\\02.Test\\07.SIFT_Keys\\testFeature(%d).bin',i);
+    filename = sprintf('..\\..\\TestRepo\\02.Test\\07.SIFT_Keys\\testFeature(%d).bin',i);
     featureFile = fopen (filename,'w');
     fwrite (featureFile,siz,'uint32');
 
     
     for j = 1:siz(2)
-        fwrite (featureFile,fb','double');
+        fwrite (featureFile,fb(1:2,j)','double');
         fwrite (featureFile,db(:,j)','uint8');   
 
     end;
@@ -45,12 +45,12 @@ for i = 0:99
 end;
 
 
-featureFile = fopen ('C:\Users\Gautam\Desktop\Project\01.Training\07.SIFT_Keys\siftfeature.bin','r');
+featureFile = fopen ('..\..\TestRepo\01.Training\07.SIFT_Keys\train.bin','r');
 fread (featureFile,2,'uint32')
-fread (featureFile,4,'double')
+fread (featureFile,2,'double')
 fread (featureFile,128,'uint8')
 
 
-fread (featureFile,4,'double')
+fread (featureFile,2,'double')
 fread (featureFile,128,'uint8')
 fclose (featureFile);

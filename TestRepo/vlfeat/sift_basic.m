@@ -2,7 +2,7 @@ close all
 clear all
 clc
 
-lena = single(rgb2gray(imread('C:\Users\Gautam\Desktop\Project\00.Test_Images\lena.bmp')));
+lena = single(rgb2gray(imread('..\..\TestRepo\00.Test_Images\lena.bmp')));
 figure (1);
 imshow(uint8(lena));
 

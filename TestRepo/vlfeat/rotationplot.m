@@ -4,8 +4,8 @@ clc
 
 actualRotation = [0:99]*2*pi/100;
 index = 1;
-for threshold = 51:10:851    
-    fileName = sprintf ('C:\\Users\\Gautam\\Desktop\\Project\\02.Test\\Rotation\\Threshold(%d).bin',threshold);
+for threshold = 50:10:940
+    fileName = sprintf ('..\\..\\TestRepo\\02.Test\\Rotation\\Threshold(%d).bin',threshold);
     rotationFile = fopen (fileName,'r');
     observedRotation(index,:) = fread (rotationFile, 100, 'double');
     fclose (rotationFile);

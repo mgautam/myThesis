@@ -5,9 +5,9 @@ clc
 %SIFT descriptors are often used find similar regions in two images.
 % vl_ubcmatch implements a basic matching algorithm.
 % Let Ia and Ib be images of the same object or scene. We extract and match the descriptors by:
-Ia = single(rgb2gray(imread('C:\Users\Gautam\Desktop\Project\00.Test_Images\lena.bmp')));
-Ib = single((imread('C:\Users\Gautam\Desktop\Project\00.Test_Images\lena.bmp(25).bmp')));
-%single(imfilter(single((imread('C:\Users\Gautam\Desktop\Project\00.Test_Images\Solidball.bmp(50).bmp'))),gauss2d(1,0),'conv'));
+Ia = single(rgb2gray(imread('..\..\TestRepo\00.Test_Images\lena.bmp')));
+Ib = single((imread('..\..\TestRepo\00.Test_Images\lena.bmp(25).bmp')));
+%single(imfilter(single((imread('..\..\TestRepo\00.Test_Images\Solidball.bmp(50).bmp'))),gauss2d(1,0),'conv'));
 
 [fa, da] = vl_sift (Ib) ;
 [fb, db] = vl_sift (Ia) ;
@@ -46,7 +46,7 @@ set(h2,'color','y','linewidth',2) ;
 initCoords = fa(1:2,matches(1,:));
 finalCoords = fb(1:2,matches(2,:));
 
-matchFile = fopen ('C:\Users\Gautam\Desktop\Project\Matlab Code\siftmatches.bin','w');
+matchFile = fopen ('..\..\TestRepo\Matlab Code\siftmatches.bin','w');
 fwrite (matchFile,length(scores),'uint32');
 fwrite (matchFile,initCoords(1,:),'double');
 fwrite (matchFile,initCoords(2,:),'double');
@@ -54,6 +54,6 @@ fwrite (matchFile,finalCoords(1,:),'double');
 fwrite (matchFile,finalCoords(2,:),'double');
 fclose (matchFile);
 
-matchFile = fopen ('C:\Users\Gautam\Desktop\Project\Matlab Code\siftmatches.bin','r');
+matchFile = fopen ('..\..\TestRepo\Matlab Code\siftmatches.bin','r');
 x = fread (matchFile,1,'uint32')
 fclose (matchFile);
