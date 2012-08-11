@@ -20,12 +20,14 @@ int main (int argc, char **argv) {
 	//testDSP ();
 	//testCriticalPoints ();
 	//testMatrix ();
-	// testFrames ();
+	//testFrames ();
 	//testAffineModel ();
 	//testMotionExtract ();
 	//testMatchFeatures ();
 	
 	processFrames ();
+
+	system ("pause");
 
 	return 0;
 }

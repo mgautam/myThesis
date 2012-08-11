@@ -81,9 +81,9 @@ GIMAGE**** LaplacianPyramid(GIMAGE *inImage, GTYPE sigma, int octaves, int numBl
 	
 		
 	char *filename = new char[100];	
-	GIMAGE* tmpImage = new GIMAGE;
-	tmpImage = cloneImage(inImage);
-	for(int i=0; i < octaves; i++) {
+	GIMAGE* tmpImage = cloneImage(inImage);
+	for(int i=0; i < octaves; i++) 
+	{
 		//cout << "\t   Octave " << i+1 << "/" << octaves << "\t Blur " << 1 << "/" << numBlurs << endl;
 		cout << "\t" << sigma*pow(2.0,(GTYPE)i) << " ";
 		Pyramid[0][i][0] = createImage( tmpImage->width, tmpImage->height, 1 );
@@ -94,7 +94,8 @@ GIMAGE**** LaplacianPyramid(GIMAGE *inImage, GTYPE sigma, int octaves, int numBl
 			writeImageNorm(filename,Pyramid[0][i][0]);
 		}
 
-		for(int j=0; j < numBlurs-1; j++) {	
+		for(int j=0; j < numBlurs-1; j++) 
+		{	
 			//cout << "\t   Octave " << i+1 << "/" << octaves << "\t Blur " << j+2 << "/" << numBlurs << endl;
 			cout << sigma*pow(2.0,(GTYPE)i+(j+1)/(GTYPE)(numBlurs-3)) << " ";
 
@@ -126,4 +127,24 @@ GIMAGE**** LaplacianPyramid(GIMAGE *inImage, GTYPE sigma, int octaves, int numBl
 	cout << "\t Laplacian Pyramid Formation Successfully Completed!" << endl;
 
 	return Pyramid;
+}
+
+
+void releaseLaplacianPyramid (GIMAGE**** Pyramid, int numOctaves, int numBlurs) {
+	for (int i = 0; i < numOctaves; i++) {
+			
+			for(int j =0; j < numBlurs-1; j++) {
+				releaseImage (Pyramid[0][i][j]);
+				releaseImage (Pyramid[1][i][j]);
+			}
+			delete Pyramid[0][i][numBlurs-1]; // Gaussian Pyramid has one extra Layer
+
+
+			delete Pyramid[0][i];
+			delete Pyramid[1][i];			
+		}
+		delete Pyramid[0];
+		delete Pyramid[1];
+
+		delete Pyramid;
 }

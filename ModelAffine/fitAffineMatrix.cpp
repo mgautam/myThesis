@@ -1,5 +1,7 @@
 #include <ModelAffine/fitAffineMatrix.h>
 
+#define SMALL_NOISE 0.01
+
 MATRIX fitAffineMatrix (COORDS initialPosition, COORDS finalPosition ) {
 	AMATRIX initialAMatrix = AMATRIX (3,initialPosition.Number_of_Coordinates);
 
@@ -9,10 +11,22 @@ MATRIX fitAffineMatrix (COORDS initialPosition, COORDS finalPosition ) {
 		initialData[0][row] = initialPosition.x[row];
 		initialData[1][row] = initialPosition.y[row];
 		initialData[2][row] = 1;
+		//initialData[0][row] = initialPosition.x[row] / (initialPosition.scores[row]+SMALL_NOISE); // Weighting for Weighted Least Squares
+		//initialData[1][row] = initialPosition.y[row] / (initialPosition.scores[row]+SMALL_NOISE); // Weighting for Weighted Least Squares
+		//initialData[2][row] = 1.0 / (initialPosition.scores[row]+SMALL_NOISE); // Weighting for Weighted Least Squares
+
 	}
 
 	MATRIX TransposedInitMat = transpose (initialMatrix);
 	
+/*
+	// For Weighted Least Squares
+	for (int row = 0; row < finalPosition.Number_of_Coordinates; row++) {
+		finalPosition.x[row] /= (finalPosition.scores[row]+SMALL_NOISE);
+		finalPosition.y[row] /= (finalPosition.scores[row]+SMALL_NOISE);
+	}
+	// Until here.
+*/
 	MATRIX finalX = MATRIX (finalPosition.x, finalPosition.Number_of_Coordinates);
 	MATRIX finalY = MATRIX (finalPosition.y, finalPosition.Number_of_Coordinates);
 	

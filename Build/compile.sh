@@ -15,7 +15,7 @@ do
 	    if [ -e "$FILE" ]
 	    then
 		echo "Compiling "$FILE"";
-		ccache g++ -c -g $FILE -I $REL -o $FILE".o"
+		ccache g++ -c -g $FILE -I $REL -o $FILE".o" -Wno-write-strings
 	        mv $FILE".o" .
 	    fi
 	done

@@ -28,7 +28,7 @@ void testMatchFeatures (void) {
 
 		TrainFeature.features[FeatureIndex].x = FeatureIndex;
 		TrainFeature.features[FeatureIndex].y = FeatureIndex;
-		TrainFeature.features[FeatureIndex].FeatureVector = new char [FeatureVectorLength];
+		TrainFeature.features[FeatureIndex].FeatureVector = new double [FeatureVectorLength];
 
 		for (int vectorIndex = 0; vectorIndex < FeatureVectorLength; vectorIndex++)
 			TrainFeature.features[FeatureIndex].FeatureVector[vectorIndex] = (FeatureIndex+1)*vectorIndex;
@@ -39,7 +39,7 @@ void testMatchFeatures (void) {
 
 		TestFeature.features[FeatureIndex].x = FeatureIndex;
 		TestFeature.features[FeatureIndex].y = FeatureIndex;
-		TestFeature.features[FeatureIndex].FeatureVector = new char [FeatureVectorLength];
+		TestFeature.features[FeatureIndex].FeatureVector = new double [FeatureVectorLength];
 					
 		for (int vectorIndex = 0; vectorIndex < FeatureVectorLength; vectorIndex++)
 			TestFeature.features[FeatureIndex].FeatureVector[vectorIndex] = FeatureIndex*vectorIndex;
