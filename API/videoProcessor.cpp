@@ -19,7 +19,7 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 	BuildFeature (filename, -1, "./TestRepo/01.Training");
 
 	FEATURES train;
-	FILE *featureFile = fopen ("./TestRepo/01.Training/07.Angle_Keys/train.bin","rb");	
+	FILE *featureFile = fopen ("./TestRepo/01.Training/07.Feature_Keys/train.bin","rb");	
 	fread (&(train.FeatureVectorLength),sizeof (int), 1, featureFile);
 	fread (&(train.Number_of_Features),sizeof (int), 1, featureFile);
 		
@@ -30,7 +30,9 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 
 	
 	//cout << filename << endl;
-	GIMAGE *trainImage = Gtype (readGrey(filename));
+	IMAGE *JustGrey = readGrey(filename);
+	GIMAGE *trainImage = Gtype (JustGrey);
+	releaseImage (JustGrey);
 	IMAGE *keyImage = createimage (trainImage->width,trainImage->height,trainImage->numColors);
 	memset (keyImage->imageData,255,trainImage->width*trainImage->height*trainImage->numColors);
 
@@ -64,11 +66,14 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 	writeImage (filename, keyImage);
 	releaseImage (keyImage);
 
+
+
+
 	FEATURES test;
 	GIMAGE *testImage;	
 	COORDS* coordinateMappings;
 	COORDS initial,final;
-	for ( int frameIndex = 0; frameIndex < 100; frameIndex+=1 ) {
+	for ( int frameIndex = 9; frameIndex < 100; frameIndex+=1 ) {
 
 		// Extract Sift Features
 		//filename = new char[100];
@@ -77,7 +82,7 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 		BuildFeature (filename, frameIndex, "./TestRepo/02.Test");
 
 		// Read SiftFeatures (if this works perfectly we could build this in RAM instead of writing to disk to make it faster
-		sprintf (filename, "./TestRepo/02.Test/07.Angle_Keys/testFeature(%d).bin",frameIndex);
+		sprintf (filename, "./TestRepo/02.Test/07.Feature_Keys/testFeature(%d).bin",frameIndex);
 		featureFile = fopen (filename,"rb");	
 		fread (&(test.FeatureVectorLength),sizeof (int), 1, featureFile);
 		fread (&(test.Number_of_Features),sizeof (int), 1, featureFile);
@@ -89,7 +94,9 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 
 		sprintf (filename,".\\TestRepo\\00.Test_Images\\Frames\\%d.bmp",frameIndex);
 		//cout << filename << endl;
-		testImage = Gtype (readGrey(filename));
+		JustGrey = readGrey(filename);
+		testImage = Gtype (JustGrey);
+		releaseImage (JustGrey);
 
 		for (int featureIndex = 0; featureIndex < test.Number_of_Features; featureIndex ++) {
 			fread ( &(test.features[featureIndex].x), sizeof (double), 1 , featureFile);
@@ -157,10 +164,10 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 		//delete filename;
 		
 	}	
-/*
+
 	// Garbage Collection: Train Feature
-	for (int featureIndex = 0; featureIndex < test.Number_of_Features; featureIndex ++)
+	for (int featureIndex = 0; featureIndex < train.Number_of_Features; featureIndex ++)
 		delete train.features[featureIndex].FeatureVector;
 	delete train.features;
-*/
+
 }

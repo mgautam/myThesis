@@ -17,22 +17,27 @@
 #include <iostream>
 using namespace std;
 
-static double bilinearInterpolate (double x, double y, GTYPE *Array, int width, int height) {
+static double bilinearInterpolate (double x, double y, double *Array, int width, int height) {
 
 	double value = 0;
-	if (x > 0 && x < width && y > 0 && y < height)
-		value += abs ( ((double)((int)(x+0.5)) - x)* ((double)((int)(y+0.5))-y) ) * Array[(int)(x)*width+(int)(y)];
-	if (x > 0 && x < width && (y+0.5) > 0 && (y+0.5) < height)
-		value += abs ( ((double)((int)(x+0.5)) - x)* ((double)((int)(y))-y) ) * Array[(int)(x)*width+(int)(y)];
-	if ((x+0.5) > 0 && (x+0.5) < width && y > 0 && y < height)
-		value += abs ( ((double)((int)(x)) - x)* ((double)((int)(y+0.5))-y) ) * Array[(int)(x+0.5)*width+(int)(y+0.5)];
-	if ((x+0.5) > 0 && (x+0.5) < width && (y+0.5) > 0 && (y+0.5) < height)
-		value += abs ( ((double)((int)(x)) - x)* ((double)((int)(y))-y) ) * Array[(int)(x+0.5)*width+(int)(y+0.5)];
+	if ((int)x >= 0 && x < width && (int)y >= 0 && y < height)
+		value += abs ( ((double)((int)(x+1)) - x)* ((double)((int)(y+1))-y) ) * Array[(int)(y)*width+(int)(x)];
+	if ((int)x >= 0 && x < width && (int)(y+1) >= 0 && (y+1) < height)
+		value += abs ( ((double)((int)(x+1)) - x)* ((double)((int)(y))-y) ) * Array[(int)(y+1)*width+(int)(x)];
+	if ((int)(x+1) >= 0 && (x+1) < width && (int)y >= 0 && y < height)
+		value += abs ( ((double)((int)(x)) - x)* ((double)((int)(y+1))-y) ) * Array[(int)(y)*width+(int)(x+1)];
+	if ((int)(x+1) >= 0 && (x+1) < width && (int)(y+1) >= 0 && (y+1) < height)
+		value += abs ( ((double)((int)(x)) - x)* ((double)((int)(y))-y) ) * Array[(int)(y+1)*width+(int)(x+1)];
 
-	double Norm = abs ( ((double)((int)(x+0.5)) - x)* ((double)((int)(y+0.5))-y) ) +
-		abs ( ((double)((int)(x+0.5)) - x) * (y - (double)((int) y)) ) +
-		abs ( (x-(double)((int)x)) * ((double)((int)(y+0.5)) - y) ) +
+	double Norm = abs ( ((double)((int)(x+1)) - x)* ((double)((int)(y+1))-y) ) +
+		abs ( ((double)((int)(x+1)) - x) * (y - (double)((int) y)) ) +
+		abs ( (x-(double)((int)x)) * ((double)((int)(y+1)) - y) ) +
 		abs ( (x-(double)((int)x)) * (y - (double)((int) y)) );
+
+	cout << "X:" << ((double)((int)(x+1)) - x) << " " << (x-(double)((int)x)) << endl;
+
+	if (Norm < 0.001 && Norm > -0.001)
+		Norm = 1;
 
 	return value/Norm;
 }
@@ -55,28 +60,26 @@ static int* cyclicConv (int *Sequence, double spread) {
 
 	int *iConvolved = new int [FEATURE_LENGTH];
 	for (int n = 0; n < FEATURE_LENGTH; n++)
-		iConvolved[n] = (int) convolved[n];
+		iConvolved[n] = (int) (0.5+convolved[n]);//rounding off
 	delete convolved;
 
 	return iConvolved;
 }
 
-int magoriCalc(GIMAGE *GaussPix, IMAGE *ExPix, int octave, int blur, char *Project_Folder) {
-	FILE *magFile,*oriFile;
-	char filename[MAX_FILE_NAME_LENGTH];
-	sprintf(filename,"%s/04.Gradient_Pyramid/%d%d.bin",Project_Folder,octave,blur);
-	magFile = fopen(filename,"wb");
-	sprintf(filename,"%s/05.Orientation_Pyramid/%d%d.bin",Project_Folder,octave,blur);
-	oriFile = fopen(filename,"wb");
-		
+int featureCalc(GIMAGE *GaussPix, IMAGE *ExPix, int octave, int blur, char *Project_Folder) 
+{
 	GTYPE *Magnitudes = new GTYPE[GaussPix->width*GaussPix->height];
 	GTYPE maxMag = MIN_PIXEL_VALUE, minMag = MAX_PIXEL_VALUE;
-	GTYPE *orientations = new GTYPE[GaussPix->width*GaussPix->height];
-	
+		
 	GTYPE tempOri = 0;
-	for(int n1 = 0; n1 < GaussPix->height-1; n1++) {
-		for(int n2 = 0; n2 < GaussPix->width-1; n2++) {
-			Magnitudes[n1*GaussPix->width+n2] = sqrt( pow( GTYPE( GaussPix->imageData[n1*GaussPix->width+n2] - GaussPix->imageData[(n1+1)*GaussPix->width+n2] ) , 2 ) 
+	GTYPE *orientations = new GTYPE[GaussPix->width*GaussPix->height];
+
+	for(int n1 = 0; n1 < GaussPix->height-1; n1++) 
+	{
+		for(int n2 = 0; n2 < GaussPix->width-1; n2++) 
+		{
+			Magnitudes[n1*GaussPix->width+n2] = 
+				sqrt( pow( GTYPE( GaussPix->imageData[n1*GaussPix->width+n2] - GaussPix->imageData[(n1+1)*GaussPix->width+n2] ) , 2 ) 
 				+ pow(GTYPE(GaussPix->imageData[n1*GaussPix->width+n2]-GaussPix->imageData[n1*GaussPix->width+n2+1]),2));
 			
 			if(Magnitudes[n1*GaussPix->width+n2] > maxMag) 
@@ -100,30 +103,9 @@ int magoriCalc(GIMAGE *GaussPix, IMAGE *ExPix, int octave, int blur, char *Proje
 	for(int n2 = 0; n2 < GaussPix->width; n2++)
 		Magnitudes[(GaussPix->height-1)*GaussPix->width+n2] = 0;
 			
-	fwrite(&maxMag,sizeof(GTYPE),1,magFile);
-	fwrite(&minMag,sizeof(GTYPE),1,magFile);
-	fwrite(Magnitudes,sizeof(GTYPE),GaussPix->width*GaussPix->height,magFile);
-	fwrite(orientations,sizeof(GTYPE),GaussPix->width*GaussPix->height,oriFile);
-	//cout << index << ". MaxMag = " << maxMag << " , MinMag = " << minMag << endl;
-	fclose(magFile);
-	fclose(oriFile);
 	
-	delete orientations;
-	
-	int numKeys = 0;
-	GTYPE threshold = maxMag/10.0;	
-	for(int n1 = 0; n1 < ExPix->height-1; n1++)
-		for(int n2 = 0; n2 < ExPix->width-1; n2++)
-			if(ExPix->imageData[n1*ExPix->width+n2] == MAX_PIXEL_VALUE && Magnitudes[n1*ExPix->width+n2] > threshold )
-				numKeys++;
 
-	delete Magnitudes;
 
-//	cout << "\t\tStable Keypoints: " << numKeys << endl;
-	return numKeys;	
-}
-
-void angleKeyCalc(IMAGE *ExPix, int numKeys, int octave, int blur, char* Project_Folder) {
 
 	int number_of_sectors = FEATURE_LENGTH;
 
@@ -173,32 +155,22 @@ void angleKeyCalc(IMAGE *ExPix, int numKeys, int octave, int blur, char* Project
 	}
 */	
 
-	char filename[MAX_FILE_NAME_LENGTH];	
-
-	FILE *magFile,*oriFile;
-	GTYPE *Magnitudes = new GTYPE[ExPix->width*ExPix->height];
-	GTYPE maxMag, minMag;
-	GTYPE *orientations = new GTYPE[ExPix->width*ExPix->height];
-
-	sprintf(filename,"%s/04.Gradient_Pyramid/%d%d.bin",Project_Folder,octave,blur);
-	magFile = fopen(filename,"rb");
-	fread(&maxMag,sizeof(GTYPE),1,magFile);
-	fread(&minMag,sizeof(GTYPE),1,magFile);
-	fread(Magnitudes,sizeof(GTYPE),ExPix->width*ExPix->height,magFile);
-	fclose(magFile);
-
-	sprintf(filename,"%s/05.Orientation_Pyramid/%d%d.bin",Project_Folder,octave,blur);
-	oriFile = fopen(filename,"rb");
-	fread(orientations,sizeof(GTYPE),ExPix->width*ExPix->height,oriFile);
-	fclose(oriFile);
 	
-
 	GTYPE gaussFilter[81];
 	GaussianFilter2 (0, 1.5*1.5*blur, -4, 9, gaussFilter);
-	GTYPE oriBins[(int)NUMBER_OF_ORIENTATION_BINS_I];
 
+	int numKeys = 0;
+	GTYPE threshold = maxMag/10.0;	
+	for(int n1 = 0; n1 < ExPix->height-1; n1++)
+		for(int n2 = 0; n2 < ExPix->width-1; n2++)
+			if(ExPix->imageData[n1*ExPix->width+n2] == MAX_PIXEL_VALUE && Magnitudes[n1*ExPix->width+n2] > threshold )
+				numKeys++;
+
+	
 	angleKey *AngleDescriptor = new angleKey[(int)(NUMBER_OF_ORIENTATION_BINS_I*numKeys)];
 	int keyIndex = 0;
+	GTYPE oriBins[(int)NUMBER_OF_ORIENTATION_BINS_I];
+
 	GTYPE Magnif = 1.0;//1.0 / pow(2.0,octave);
 	GTYPE stdev = 1.5 * Magnif;
 	int sectorOffset = 0;
@@ -215,8 +187,8 @@ void angleKeyCalc(IMAGE *ExPix, int numKeys, int octave, int blur, char* Project
 						oriBins[i] = 0;
 					
 				
-					for(int k1=-3.5; k1 < 4; k1++)
-						for(int k2=-3.5; k2 < 4; k2++)
+					for(int k1=-3; k1 < 4; k1++)
+						for(int k2=-3; k2 < 4; k2++)
 							if((n1+k1*Magnif) > 0 && (n1+k1*Magnif) < ExPix->height && (n2+k2*Magnif) > 0 && (n2+k2*Magnif) < ExPix->width) {
 
 								oriBins[(int) (orientations[(n1+k1)*ExPix->width +(n2+k2)]/(2.0*pi) * NUMBER_OF_ORIENTATION_BINS_I)] 
@@ -248,8 +220,8 @@ void angleKeyCalc(IMAGE *ExPix, int numKeys, int octave, int blur, char* Project
 							numMax++;						
 						}
 
-				int subIndex = 0;
-				for ( ; subIndex < numMax; subIndex++ ) 
+				
+				for ( int subIndex = 0; subIndex < numMax; subIndex++ ) 
 				{
 					AngleDescriptor[keyIndex].y = (double)n1 * pow(2.0,octave-1);//before without pow
 					AngleDescriptor[keyIndex].x = (double)n2 * pow(2.0,octave-1);//before without pow
@@ -295,15 +267,8 @@ void angleKeyCalc(IMAGE *ExPix, int numKeys, int octave, int blur, char* Project
 			}
 		}
 	}
-	
-//	cout << "\t\tKeys with Orientation = " << keyIndex << endl;
-	FILE *keyFile;
-	sprintf(filename,"%s/07.Angle_Keys/%d%d.bin",Project_Folder,octave,blur);
-	keyFile = fopen(filename,"wb");
-	fwrite(&keyIndex,sizeof(int),1,keyFile);
-	fwrite(AngleDescriptor,sizeof(angleKey),keyIndex,keyFile);
-	fclose(keyFile);
-
+	//cout << "\t\tStable Keypoints: " << numKeys << endl;
+	//cout << "\t\tKeys with Orientation = " << keyIndex << endl;
 
 	// Garbage Collection
 	for (int sectorIndex = 0; sectorIndex < number_of_sectors; sectorIndex++) {
@@ -313,32 +278,56 @@ void angleKeyCalc(IMAGE *ExPix, int numKeys, int octave, int blur, char* Project
 	}
 	delete sectorWindow;
 
-	delete Magnitudes;
-	delete orientations;
-	delete AngleDescriptor;	
+
+	char filename[MAX_FILE_NAME_LENGTH];	
+/*
+	sprintf(filename,"%s\\04.Gradient_Pyramid\\%d%d.bin",Project_Folder,octave,blur);
+	FILE *magFile = fopen(filename,"wb");
+	fwrite(&maxMag,sizeof(GTYPE),1,magFile);
+	fwrite(&minMag,sizeof(GTYPE),1,magFile);
+	fwrite(Magnitudes,sizeof(GTYPE),GaussPix->width*GaussPix->height,magFile);
+	//cout << ". MaxMag = " << maxMag << " , MinMag = " << minMag << endl;
+	fclose(magFile);		
+*/	delete Magnitudes;
+
+/*
+	sprintf(filename,"%s\\05.Orientation_Pyramid\\%d%d.bin",Project_Folder,octave,blur);
+	FILE *oriFile = fopen(filename,"wb");
+	fwrite(orientations,sizeof(GTYPE),GaussPix->width*GaussPix->height,oriFile);
+	fclose(oriFile);	
+*/	delete orientations;
+
+
+	sprintf(filename,"%s\\07.Feature_Keys\\%d%d.bin",Project_Folder,octave,blur);
+	FILE *keyFile = fopen(filename,"wb");
+	fwrite(&keyIndex,sizeof(int),1,keyFile);
+	fwrite(AngleDescriptor,sizeof(angleKey),keyIndex,keyFile);
+	fclose(keyFile);
+	delete AngleDescriptor;
+
+	return numKeys;
 }
 
 
-void writeAllFeatures (GTYPE sigma, int numOctaves, int numBlurs, char *PROJECT_FOLDER, int frameIndex) {
-	FILE *keyFile;
-	int numKeys,totalKeys = 0;
-	angleKey *AngleDescriptor;
+void writeAllFeatures (GTYPE sigma, int numOctaves, int numBlurs, char *PROJECT_FOLDER, int frameIndex) 
+{
 	char filename[MAX_FILE_NAME_LENGTH];
 
-	if (frameIndex == -1) sprintf (filename,"%s/07.Angle_Keys/train.bin",PROJECT_FOLDER);
-	else sprintf (filename,"%s/07.Angle_Keys/testFeature(%d).bin",PROJECT_FOLDER,frameIndex);
+	if (frameIndex == -1) sprintf (filename,"%s/07.Feature_Keys/train.bin",PROJECT_FOLDER);
+	else sprintf (filename,"%s/07.Feature_Keys/testFeature(%d).bin",PROJECT_FOLDER,frameIndex);
 	FILE *AllKeyFile = fopen (filename,"wb");
 
 	int featurelength = FEATURE_LENGTH;
 	fwrite(&featurelength,sizeof(int),1,AllKeyFile);
 	fseek(AllKeyFile,sizeof(int),SEEK_CUR); // Allocated space to write Total Number of features
-	
+
+	int numKeys,totalKeys = 0;
 	for (int i = 0; i < numOctaves; i++)
 		for (int j = 1; j < numBlurs-2; j++) {
-			sprintf(filename,"%s/07.Angle_Keys/%d%d.bin",PROJECT_FOLDER,i,j);
-			keyFile = fopen(filename,"rb");
+			sprintf(filename,"%s/07.Feature_Keys/%d%d.bin",PROJECT_FOLDER,i,j);
+			FILE *keyFile = fopen(filename,"rb");
 			fread(&numKeys,sizeof(int),1,keyFile);
-			AngleDescriptor = new angleKey[numKeys];
+			angleKey *AngleDescriptor = new angleKey[numKeys];
 			fread(AngleDescriptor,sizeof(angleKey),numKeys,keyFile);
 			fclose(keyFile);
 

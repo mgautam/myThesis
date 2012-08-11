@@ -60,7 +60,7 @@ COORDS* findNearestNeighbor (FEATURES TrainFeature,FEATURES TestFeature, double 
 
 	}
 	
-	printf ("\n"); // Remove
+	printf ("%d\n",numTestFeatures); // Remove
 
 	coordinates[0].Number_of_Coordinates = nearNeighborIndex; // Only the Number of Corresponding nearest Neighbor Training object 2D Position vectors
 	coordinates[1].Number_of_Coordinates = nearNeighborIndex; // Only the Number of Corresponding nearest Neighbor Test object 2D Position vectors

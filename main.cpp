@@ -31,9 +31,11 @@ int main (int argc, char **argv) {
 	//testMotionExtract ();
 	//testMatchFeatures ();
 	
-	int translation[2] = {0,0};
-	createFrames ("./TestRepo/00.Test_Images/lena.bmp", "./TestRepo/00.Test_Images/Frames", translation, 100);//,"./TestRepo/00.Test_Images/lena.bmp");
-	processFrames (-1,0,false);
+	//createFrames ("./TestRepo/00.Test_Images/lena.bmp", "./TestRepo/00.Test_Images/Frames", 100);//,"./TestRepo/00.Test_Images/lena.bmp");
+	
+	FILE *angles = fopen (".\\TestRepo\\02.Test\\estimated_rotation.bin","wb");
+	processFrames (-1,angles,false);
+	fclose (angles);
 
 	system ("pause");
 

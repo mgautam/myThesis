@@ -19,7 +19,9 @@ void showMotion (MATRIX AffineMatrix, FILE *output) {
 	printf ("Rotation: %6.3lf\n", theta);
 	//printf ("Rotation: %6.3lf   Translation: ( x: %8.3lf , y: %8.3lf )\n", theta, AffineMatrixData[2][0], AffineMatrixData[2][1]);
 	
-	if (output) 
+	if (output) {
 		fwrite (&theta, sizeof (double), 1, output);
+		fflush (output);
+	}
 
 }
