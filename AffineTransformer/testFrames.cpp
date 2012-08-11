@@ -3,8 +3,6 @@
 
 void testFrames (void) {
 	
-	int translation[2] = {0,0};
-	
-	createFrames (".\\TestRepo\\00.Test_Images\\checkeredball.bmp", ".\\TestRepo\\00.Test_Images\\Frames", translation, 100,".\\TestRepo\\00.Test_Images\\lena.bmp");
+	createFrames (".\\TestRepo\\00.Test_Images\\earth.bmp", ".\\TestRepo\\00.Test_Images\\Frames", 100);//,".\\TestRepo\\00.Test_Images\\space.bmp");
 
 }

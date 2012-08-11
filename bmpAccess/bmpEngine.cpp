@@ -1,3 +1,5 @@
+#include <iostream>
+using namespace std;
 #include <stdio.h>
 
 #include <bmpAccess/bmpRead.h>
@@ -55,10 +57,12 @@
  void writeImage(char *fileName, GIMAGE *image, bool printInfo){
 	IMAGE *outImage =  uChar(image);
 	writeImage(fileName, outImage, printInfo);
+	releaseImage (outImage);
 }
  void writeImageNorm(char *fileName, GIMAGE *image, bool printInfo){
 	IMAGE *outImage =  uCharNorm(image);
 	writeImage(fileName, outImage, printInfo);
+	releaseImage (outImage);
 }
 
 

@@ -7,7 +7,7 @@ run 'vlfeat-0.9.14\toolbox\vl_setup.m';
 %SIFT descriptors are often used find similar regions in two images.
 % vl_ubcmatch implements a basic matching algorithm.
 % Let Ia and Ib be images of the same object or scene. We extract and match the descriptors by:
-Ia = single(rgb2gray(imread('..\00.Test_Images\checkeredball.bmp')));
+Ia = single(rgb2gray(imread('..\00.Test_Images\earth.bmp')));
 [fa, da] = vl_sift (Ia) ;
 siz=size(da);
 

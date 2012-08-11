@@ -19,7 +19,7 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 
 	char filename[100];
 	sprintf (filename,".\\TestRepo\\00.Test_Images\\checkeredball.bmp");
-	cout << filename << endl;
+	//cout << filename << endl;
 	GIMAGE *trainImage = Gtype (readGrey(filename));
 
 	for (int index = 0; index < train.Number_of_Features; index ++) {
@@ -39,7 +39,7 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 	fclose (featureFile);
 
 	sprintf (filename,".\\TestRepo\\01.Training\\keyImage.bmp");
-	cout << filename << endl;
+	//cout << filename << endl;
 	writeImage (filename, trainImage);
 	releaseImage (trainImage);
 
@@ -59,7 +59,7 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 		test.features = new FEATURE [ test.Number_of_Features ];
 
 		sprintf (filename,".\\TestRepo\\00.Test_Images\\Frames\\%d.bmp",frameIndex);
-		cout << filename << endl;
+		//cout << filename << endl;
 		testImage = Gtype (readGrey(filename));
 
 		for (int featureIndex = 0; featureIndex < test.Number_of_Features; featureIndex ++) {
@@ -77,7 +77,7 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 		fclose (featureFile);
 
 		sprintf (filename,".\\TestRepo\\02.Test\\KeysinFrame\\keyImage(%d).bmp",frameIndex);
-		cout << filename << endl;
+		//cout << filename << endl;
 		writeImage (filename, testImage);
 		releaseImage (testImage);
 
@@ -103,7 +103,7 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 		MATRIX affine = fitAffineMatrix ( initial, final );
 		if (printInfo) cout << affine << endl;
 
-		//printf ("Frame: %2d  ", frameIndex);
+		//printf ("Frame: %2d %6.3lf ", frameIndex, 2*3.14*(double)frameIndex/(double)100);
 		printf ("Frame: %2d  Actual: %6.3lf  ", frameIndex,2*3.14*(double)frameIndex/(double)100);
 		showMotion (affine,  RotationDataFile);
 
@@ -120,7 +120,7 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 
 	// Garbage Collection: Train Feature
 /*
-	for (int featureIndex = 0; featureIndex < test.Number_of_Features; featureIndex ++)
+	for (int featureIndex = 0; featureIndex < train.Number_of_Features; featureIndex ++)
 		delete train.features[featureIndex].FeatureVector;
 	delete train.features;
 */

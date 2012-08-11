@@ -8,9 +8,12 @@
 #define OUT_WIDTH 512
 #define OUT_HEIGHT 512
 
-#define SCALE 0.5
+#define SCALE 1
 
-void createFrames (char *fileName, char *FramesFolder, int *translation, int numFrames, char *backgroundFile) {
+
+
+void createFrames (char *fileName, char *FramesFolder, int numFrames, char *backgroundFile) {
+	double translation [2] = {-OUT_WIDTH/2,-OUT_HEIGHT/2};
 
 	GIMAGE* input = Gtype(readGrey(fileName));
 	GIMAGE* output;
@@ -19,14 +22,14 @@ void createFrames (char *fileName, char *FramesFolder, int *translation, int num
 	
 	double theta,sintheta,costheta;
 	double rowIn,colIn;
-	double rowOut, colOut;
+	double temp_rowIn, temp_colIn;
 	char filename[100];
 	for (int iter = 0; iter < numFrames; iter++) {
 	
 		if (backgroundFile == 0)
 			for (rowIn = 0; rowIn < OUT_HEIGHT; rowIn++)
 				for (colIn = 0; colIn < OUT_WIDTH; colIn++)
-					output->imageData[((int)rowIn)*OUT_WIDTH+(int)colIn] = 0.49; // 0.49 -> White Background; +-0.5-> Black Background
+					output->imageData[((int)rowIn)*OUT_WIDTH+(int)colIn] = 0.499; // 0.49 -> White Background; +-0.5-> Black Background
 		else
 			output =  Gtype(readGrey(backgroundFile));
 
@@ -36,26 +39,29 @@ void createFrames (char *fileName, char *FramesFolder, int *translation, int num
 		costheta = cos(theta);
 
 		GTYPE calculated_pixel;
-		for (int y = -OUT_HEIGHT/2; y < OUT_HEIGHT/2; y++)
-			for (int x = -OUT_WIDTH/2; x < OUT_WIDTH/2; x++) {
-				rowOut = y - translation[1];
-				colOut = x - translation[0];
-				rowIn = (rowOut*costheta - colOut * sintheta)/SCALE;
-				colIn = (rowOut*sintheta + colOut * costheta)/SCALE;
-		
+		for (int colOut = -OUT_HEIGHT/2; colOut < OUT_HEIGHT/2; colOut++)
+			for (int rowOut = -OUT_WIDTH/2; rowOut < OUT_WIDTH/2; rowOut++) {
+				temp_rowIn = rowOut - translation[0];
+				temp_colIn = colOut - translation[1];
+				rowIn = (temp_rowIn*costheta - temp_colIn * sintheta)/SCALE ;
+				colIn = (temp_rowIn*sintheta + temp_colIn * costheta)/SCALE ;
+	
 		
 				if (rowIn < input->height/2 && rowIn >= -input->height/2)
 					if (colIn < input->width/2 && colIn >= -input->width/2)
 					{
 						calculated_pixel = input->imageData[((int)rowIn+input->height/2)*input->width+((int)colIn+input->width/2)];
-						//if ( calculated_pixel < 0.49 ) // Transparency instead of white
-							output->imageData[((int)rowOut+OUT_HEIGHT/2)*OUT_WIDTH+(int)colOut+OUT_WIDTH/2] = calculated_pixel;
-					}
+						if ( calculated_pixel < 0.496 ) // Transparency instead of white
+							output->imageData[(rowOut+OUT_HEIGHT/2)*OUT_WIDTH+colOut+OUT_WIDTH/2] = calculated_pixel;
+					}				
 			}
 
 		sprintf (filename,"%s/%d.bmp",FramesFolder,iter);
 		cout << filename << endl;
 		writeImage (filename, output);
+
+		translation[0] += (double)OUT_HEIGHT/(double)numFrames;//sqrt (pow ((double)OUT_WIDTH,2) + pow ((double)OUT_HEIGHT,2))
+		translation[1] = translation[0];
 	}
 
 	releaseImage (input);
