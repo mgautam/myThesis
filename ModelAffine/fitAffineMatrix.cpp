@@ -2,7 +2,13 @@
 
 #define SMALL_NOISE 0.01
 
-MATRIX fitAffineMatrix (COORDS initialPosition, COORDS finalPosition ) {
+MATRIX fitAffineMatrix (COORDS initialPosition, COORDS finalPosition )
+{
+	// Just a patch
+	//initialPosition.Number_of_Coordinates = (initialPosition.Number_of_Coordinates >= 19000 ) ? 19000:initialPosition.Number_of_Coordinates;
+	//finalPosition.Number_of_Coordinates = initialPosition.Number_of_Coordinates;
+	// Just a patch
+
 	AMATRIX initialAMatrix = AMATRIX (3,initialPosition.Number_of_Coordinates);
 
 	MATRIX initialMatrix = initialAMatrix;

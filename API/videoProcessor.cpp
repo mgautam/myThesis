@@ -11,42 +11,41 @@
 #include <iostream>
 using namespace std;
 
-void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
+void processFrames (double threshold, FILE *RotationDataFile, FILE *logFile) {
 
 	char *filename = new char[100];
-	sprintf (filename,".\\TestRepo\\00.Test_Images\\lena.bmp");
+	sprintf (filename,"./TestRepo/00.Test_Images/Frames/0.bmp");//subject.bmp
 	
-	BuildFeature (filename, -1, "./TestRepo/01.Training");
+	BuildFeature (filename, -1, "./TestRepo/01.Training", logFile);
 
 	FEATURES train;
 	FILE *featureFile = fopen ("./TestRepo/01.Training/07.Feature_Keys/train.bin","rb");	
 	fread (&(train.FeatureVectorLength),sizeof (int), 1, featureFile);
 	fread (&(train.Number_of_Features),sizeof (int), 1, featureFile);
 		
-	cout << "Train Feature Length as Read: " << train.FeatureVectorLength << endl;
-	cout << "Number of Train Features as Read: " << train.Number_of_Features << endl;
+	fprintf (logFile, "\tTrain Feature Length as Read: %d\n", train.FeatureVectorLength);
+	fprintf (logFile, "\tNumber of Train Features as Read: %d\n", train.Number_of_Features);
 
 	train.features = new FEATURE [ train.Number_of_Features ];
 
 	
-	//cout << filename << endl;
-	IMAGE *JustGrey = readGrey(filename);
-	GIMAGE *trainImage = Gtype (JustGrey);
-	releaseImage (JustGrey);
+	//fprintf (logFile,"%s\n", filename);
+	IMAGE *trainImage = readGrey(filename);
 	IMAGE *keyImage = createimage (trainImage->width,trainImage->height,trainImage->numColors);
 	memset (keyImage->imageData,255,trainImage->width*trainImage->height*trainImage->numColors);
 
-	for (int index = 0; index < train.Number_of_Features; index ++) {
+	for (int index = 0; index < train.Number_of_Features; index ++)
+	{
 		fread ( &(train.features[index].x), sizeof (double), 1 , featureFile);
 		fread ( &(train.features[index].y), sizeof (double), 1 , featureFile);
 		fseek (featureFile, 2 * sizeof (double), SEEK_CUR); // Skip Reading scale and key orientation
 
 		int n1 =  (int)train.features[index].y;//Why Reflection?trainImage->height-1 -
 		int n2 =  (int)train.features[index].x;//Why Reflection?trainImage->width-1 -		
-		if (trainImage->imageData[n1 * trainImage->width + n2] > 0.48)
-			trainImage->imageData[n1 * trainImage->width + n2] = -0.48;
+		if (trainImage->imageData[n1 * trainImage->width + n2] > 250)
+			trainImage->imageData[n1 * trainImage->width + n2] = 0;
 		else
-			trainImage->imageData[n1 * trainImage->width + n2] = 0.49;
+			trainImage->imageData[n1 * trainImage->width + n2] = 255;
 
 		keyImage->imageData[n1 * keyImage->width + n2] = 0;
 
@@ -56,24 +55,24 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 
 	fclose (featureFile);
 
-	sprintf (filename,".\\TestRepo\\01.Training\\keyImage.bmp");
-	//cout << filename << endl;
+	sprintf (filename,"./TestRepo/01.Training/keyImage.bmp");
+	//logFile << filename << endl;
 	writeImage (filename, trainImage);
 	releaseImage (trainImage);
 
-	sprintf (filename,".\\TestRepo\\01.Training\\keyImage1.bmp");
-	//cout << filename << endl;
+	sprintf (filename,"./TestRepo/01.Training/keyImage1.bmp");
+	//logFile << filename << endl;
 	writeImage (filename, keyImage);
 	releaseImage (keyImage);
 
 
 
-
 	FEATURES test;
+	IMAGE* JustGrey;
 	GIMAGE *testImage;	
 	COORDS* coordinateMappings;
 	COORDS initial,final;
-	for ( int frameIndex = 9; frameIndex < 100; frameIndex+=1 ) {
+	for ( int frameIndex = 1; frameIndex < 100; frameIndex+=1 ) {
 
 		// Extract Sift Features
 		//filename = new char[100];
@@ -124,32 +123,32 @@ void processFrames (double threshold, FILE *RotationDataFile, bool printInfo) {
 		writeImage (filename, testImage);
 		releaseImage (testImage);
 
-		coordinateMappings = findNearestNeighbor (train, test, threshold);
+		coordinateMappings = findNearestNeighbor (train, test, logFile, threshold);
 		initial = coordinateMappings[0];
 		final = coordinateMappings[1];
 		
-		//if (printInfo) {
-			cout << "Number of Features: " << (int) test.Number_of_Features  << "\t";
-			cout << "Below Threshold Features: " << (int)final.Number_of_Coordinates << endl;
-			/*cout << "Matches:" << endl;
+		//if (logFile) {
+			fprintf (logFile, "\tNumber of Features: %d\n", (int) test.Number_of_Features);
+			fprintf (logFile, "\tWithin Neighborhood Features: %d\n", (int)final.Number_of_Coordinates);
+			/*logFile << "Matches:" << endl;
 			for (int matchIndex = 0; matchIndex < final.Number_of_Coordinates; matchIndex++) {
-				cout << "(" << initial.x[matchIndex] << "," << initial.y[matchIndex] << ")";
-				cout << " => ";
-				cout << "(" << final.x[matchIndex] << "," << final.y[matchIndex] << ")";
-				cout << " : ";
-				cout << final.scores[matchIndex];
-				cout << endl;
+				logFile << "(" << initial.x[matchIndex] << "," << initial.y[matchIndex] << ")";
+				logFile << " => ";
+				logFile << "(" << final.x[matchIndex] << "," << final.y[matchIndex] << ")";
+				logFile << " : ";
+				logFile << final.scores[matchIndex];
+				logFile << endl;
 			}*/
 		//}
 
-		if (printInfo) 
-			cout << endl << endl << "AffineFit:" << endl;
+		
+		fprintf (logFile, "\n\tAffineFit:\n");
 		MATRIX affine = fitAffineMatrix ( initial, final );
-		//if (printInfo) 
-			cout << affine << endl;
+		affine.print(logFile);
+		fprintf (logFile, "\n");
 
-		printf ("Frame: %2d  Actual: %6.3lf  ", frameIndex,2*3.14*(double)frameIndex/(double)100);
-		showMotion (affine,  RotationDataFile);
+		fprintf (logFile,"\tFrame: %2d  Actual: %6.3lf  ", frameIndex,2*3.14*(double)frameIndex/(double)100);
+		showMotion (affine,  logFile, RotationDataFile);
 
 		// Garbage Collection: Test Feature		
 		for (int featureIndex = 0; featureIndex < test.Number_of_Features; featureIndex ++)

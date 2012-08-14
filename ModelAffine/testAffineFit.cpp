@@ -23,8 +23,8 @@ void testAffineModel (void) {
 	
 		cout << "(" << initial.x[index] << "," << initial.y[index] << ")" ;
 
-		final.x[index] = 6*initial.x[index] + 7*initial.y[index] + 2;
-		final.y[index] = 1*initial.x[index] + 13*initial.y[index] + 3;
+		final.x[index] = 1*initial.x[index] + 0*initial.y[index] + 2;//6,7
+		final.y[index] = 0*initial.x[index] + 1*initial.y[index] + 3;//1,13
 
 		cout << " => (" << final.x[index] << "," << final.y[index] << ")" << endl;
 

@@ -2,13 +2,14 @@
 #define BMPENGINE_H
 
 #include <bmpAccess/bmpStructs.h>
+#include <stdio.h>
 
 // File Operations
- IMAGE* readRGB(char *fileName, bool printInfo = false);
- IMAGE* readGrey(char *fileName, bool printInfo = false);
- void writeImage(char *fileName, IMAGE *image, bool printInfo = false);
- void writeImage(char *fileName, GIMAGE *image, bool printInfo = false);
- void writeImageNorm(char *fileName, GIMAGE *image, bool printInfo = false);
+ IMAGE* readRGB(char *fileName, FILE *logFile = false);
+ IMAGE* readGrey(char *fileName, FILE *logFile = false);
+ void writeImage(char *fileName, IMAGE *image, FILE *logFile = false);
+ void writeImage(char *fileName, GIMAGE *image, FILE *logFile = false);
+ void writeImageNorm(char *fileName, GIMAGE *image, FILE *logFile = false);
 
 // Memory Allocations
  IMAGE* createimage(int width, int height, int numColors);

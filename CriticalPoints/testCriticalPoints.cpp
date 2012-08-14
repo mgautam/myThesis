@@ -28,7 +28,7 @@ void testCriticalPoints (void) {
 	visual = readGrey(imFile);
 	resample(Gtype(visual),2,1,inImage);
 	//inImage = Gtype(readGrey(imageName));//"./TestRepo/00.Test_Images/testSquare.bmp"));
-	GIMAGE**** Pyramid = LaplacianPyramid(inImage, sigma,  numOctaves, numBlurs, ProjectFolder);
+	GIMAGE**** Pyramid = LaplacianPyramid(inImage, sigma,  numOctaves, numBlurs, stdout, ProjectFolder);
 	releaseImage(inImage);
 
 	for(int i = 0; i < numOctaves; i++)

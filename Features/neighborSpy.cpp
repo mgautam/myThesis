@@ -34,7 +34,7 @@ static double bilinearInterpolate (double x, double y, double *Array, int width,
 		abs ( (x-(double)((int)x)) * ((double)((int)(y+1)) - y) ) +
 		abs ( (x-(double)((int)x)) * (y - (double)((int) y)) );
 
-	cout << "X:" << ((double)((int)(x+1)) - x) << " " << (x-(double)((int)x)) << endl;
+	fprintf (stdout, "X:%lf %lf\n", ((double)((int)(x+1)) - x), (x-(double)((int)x)) );
 
 	if (Norm < 0.001 && Norm > -0.001)
 		Norm = 1;

@@ -3,8 +3,8 @@
 
 #include <MotionExtract/MotionExtract.h>
 
-void showMotion (MATRIX AffineMatrix, FILE *output) {
-	
+void showMotion (MATRIX AffineMatrix, FILE *logFile, FILE *output) 
+{	
 	MATRIX_CONTENT_TYPE** AffineMatrixData = AffineMatrix.getDataPtr();
 	
 	double rawCosX = (AffineMatrixData[0][0]+AffineMatrixData[1][1]);
@@ -16,8 +16,8 @@ void showMotion (MATRIX AffineMatrix, FILE *output) {
 
 	double theta = atan2 ( sinX, cosX );//acos (cosX) //asin (sinX),
 
-	printf ("Rotation: %6.3lf\n", theta);
-	//printf ("Rotation: %6.3lf   Translation: ( x: %8.3lf , y: %8.3lf )\n", theta, AffineMatrixData[2][0], AffineMatrixData[2][1]);
+	fprintf (logFile,"Rotation: %6.3lf\n\n", theta);
+	//fprintf (logFile,"Rotation: %6.3lf   Translation: ( x: %8.3lf , y: %8.3lf )\n\n", theta, AffineMatrixData[2][0], AffineMatrixData[2][1]);
 	
 	if (output) {
 		fwrite (&theta, sizeof (double), 1, output);

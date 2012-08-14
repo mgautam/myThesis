@@ -3,6 +3,6 @@
 
 #include <stdio.h>
 
-void processFrames (double threshold = -1,  FILE *RotationDataFile = 0, bool printInfo = false);
+void processFrames (double threshold = -1,  FILE *RotationDataFile = 0, FILE *logFile = stdout);
 
 #endif

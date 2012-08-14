@@ -11,23 +11,23 @@ double* inverse_cdf (double domainInit, double domainEnd, int domainlen, double 
 	cdf [0] = pdf [0];//not just zero
 	for (int i = 1; i < domainlen; i++) {		
 		cdf [i] = cdf [i-1] + pdf [i];
-		//printf ("%d -> %lf | %lf\n",i,pdf [i], cdf[i]);
+		//fprintf (logFile,"%d -> %lf | %lf\n",i,pdf [i], cdf[i]);
 	}
 
 	/*
 	// Normalization
 	for (int i = 0; i < domainlen; i++) {
 		cdf [i] /= cdf [domainlen-1];
-		printf ("%lf\n",cdf[i]);
+		fprintf (logFile,"%lf\n",cdf[i]);
 	}
 	*/
 
 	for (int i = 0, j = 0; i < domainlen; i++) {
 		for (; j < domainlen; j++) {
-			//printf ("%d -> %lf | %lf\n",j,cdf[j],(double)i/(double)domainlen);
+			//fprintf (logFile,"%d -> %lf | %lf\n",j,cdf[j],(double)i/(double)domainlen);
 			if (cdf [j] > (double)i/(double)domainlen) {
 				inv_cdf [i] = domainInit + stepSize * (double) j;
-				printf ("%d -> %lf\n\n",i,inv_cdf[i]);
+				//fprintf (logFile,"%d -> %lf\n\n",i,inv_cdf[i]);
 				//j--;//Not Required
 				break;
 			}

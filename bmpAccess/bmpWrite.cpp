@@ -8,14 +8,14 @@
 #define FOUR_BYTES 4
 #define MULTIPLY_BYTE_POSITION (2<<((8*byteIndex)))/2 /* why /2 is required? */
 
-void writeFileHeader(FILE *fhandle, FileHeader fileHeader, bool printInfo) {
+void writeFileHeader(FILE *fhandle, FileHeader fileHeader, FILE *logFile) {
 
 	char *bmtype = new char[3];
 	strcpy(bmtype,"BM");
 	fwrite(bmtype,sizeof(char),TWO_BYTES,fhandle);	
 	delete bmtype;
 
-	if(printInfo) cout << "\tFile Size : \t\t"<< fileHeader.fileSize <<endl;
+	if(logFile) fprintf (logFile, "\tFile Size : \t\t %d\n", fileHeader.fileSize);
 	unsigned char *cfsize = new unsigned char[FOUR_BYTES];
 	for(int i = 0; i < FOUR_BYTES; i++)
 	{
@@ -32,7 +32,7 @@ void writeFileHeader(FILE *fhandle, FileHeader fileHeader, bool printInfo) {
 	fwrite(wnullDump,sizeof(char),FOUR_BYTES,fhandle);
 	delete wnullDump;
 	
-	if(printInfo) cout << "\tData Offset : \t\t"<< fileHeader.dataOffset <<endl;
+	if(logFile) fprintf (logFile, "\tData Offset : \t\t %d\n", fileHeader.dataOffset);
 	unsigned char *cdataOffset = new unsigned char[FOUR_BYTES];	
 	for(int i = 0; i < FOUR_BYTES; i++)
 	{
@@ -45,10 +45,10 @@ void writeFileHeader(FILE *fhandle, FileHeader fileHeader, bool printInfo) {
 	return;
 }
 
-void writeDataHeader(FILE *fhandle, BMPHeader bmpHeader, bool printInfo)
+void writeDataHeader(FILE *fhandle, BMPHeader bmpHeader, FILE *logFile)
 {
 	
-	if(printInfo) cout << "\tData Header Size : \t"<< bmpHeader.headerSize <<endl;
+	if(logFile) fprintf (logFile, "\tData Header Size : \t %d\n", bmpHeader.headerSize);
 	unsigned char *chsize = new unsigned char[FOUR_BYTES];	
 	for(int i = 0; i < FOUR_BYTES; i++)
 	{
@@ -58,7 +58,7 @@ void writeDataHeader(FILE *fhandle, BMPHeader bmpHeader, bool printInfo)
 	fwrite(chsize,sizeof(unsigned char),FOUR_BYTES,fhandle);
 	delete chsize;
 	
-	if(printInfo) cout << "\tImage Width : \t\t"<< bmpHeader.BMPwidth <<endl;
+	if(logFile) fprintf (logFile, "\tImage Width : \t\t %d\n", bmpHeader.BMPwidth);
 	unsigned char *cBMPwidth = new unsigned char[FOUR_BYTES];	
 	for(int i = 0; i < FOUR_BYTES; i++)
 	{
@@ -68,7 +68,7 @@ void writeDataHeader(FILE *fhandle, BMPHeader bmpHeader, bool printInfo)
 	fwrite(cBMPwidth,sizeof(unsigned char),FOUR_BYTES,fhandle);
 	delete cBMPwidth;
 
-	if(printInfo) cout << "\tImage Height : \t\t" << bmpHeader.BMPheight <<endl;
+	if(logFile) fprintf (logFile, "\tImage Height : \t\t %d\n" ,bmpHeader.BMPheight);
 	unsigned char *cBMPheight = new unsigned char[FOUR_BYTES];
 	for(int i = 0; i < FOUR_BYTES; i++)
 	{
@@ -78,7 +78,7 @@ void writeDataHeader(FILE *fhandle, BMPHeader bmpHeader, bool printInfo)
 	fwrite(cBMPheight,sizeof(unsigned char),FOUR_BYTES,fhandle);
 	delete cBMPheight;
 
-	if(printInfo) cout << "\tNumber of Color Planes : "<< bmpHeader.CPlanes <<endl;
+	if(logFile) fprintf (logFile, "\tNumber of Color Planes : %d\n", bmpHeader.CPlanes);
 	unsigned char *cCPlanes = new unsigned char[TWO_BYTES];	
 	for(int i = 0; i < TWO_BYTES; i++)
 	{
@@ -88,7 +88,7 @@ void writeDataHeader(FILE *fhandle, BMPHeader bmpHeader, bool printInfo)
 	fwrite(cCPlanes,sizeof(unsigned char),TWO_BYTES,fhandle);
 	delete cCPlanes;
 
-	if(printInfo) cout << "\tBits per Pixel : \t"<< bmpHeader.bitCount <<endl;
+	if(logFile) fprintf (logFile, "\tBits per Pixel : \t %d\n", bmpHeader.bitCount);
 	unsigned char *cbitCount = new unsigned char[TWO_BYTES];	
 	for(int i = 0; i < TWO_BYTES; i++)
 	{
@@ -98,7 +98,7 @@ void writeDataHeader(FILE *fhandle, BMPHeader bmpHeader, bool printInfo)
 	fwrite(cbitCount,sizeof(unsigned char),TWO_BYTES,fhandle);
 	delete cbitCount;
 
-	if(printInfo) cout << "\tCompression : \t\t"<< bmpHeader.Compression <<endl;
+	if(logFile) fprintf (logFile, "\tCompression : \t\t %d\n", bmpHeader.Compression);
 	unsigned char *cCompression = new unsigned char[FOUR_BYTES];	
 	for(int i = 0; i < FOUR_BYTES; i++)
 	{
@@ -108,7 +108,7 @@ void writeDataHeader(FILE *fhandle, BMPHeader bmpHeader, bool printInfo)
 	fwrite(cCompression,sizeof(unsigned char),FOUR_BYTES,fhandle);
 	delete cCompression;
 
-	if(printInfo) cout << "\tRaster Size : \t\t"<< bmpHeader.ImageDataSize <<endl;
+	if(logFile) fprintf (logFile, "\tRaster Size : \t\t %d\n", bmpHeader.ImageDataSize);
 	unsigned char *cImageDataSize = new unsigned char[FOUR_BYTES];	
 	for(int i = 0; i < FOUR_BYTES; i++)
 	{
@@ -118,7 +118,7 @@ void writeDataHeader(FILE *fhandle, BMPHeader bmpHeader, bool printInfo)
 	fwrite(cImageDataSize,sizeof(unsigned char),FOUR_BYTES,fhandle);
 	delete cImageDataSize;
 
-	if(printInfo) cout << "\tWidth Resolution : \t"<< bmpHeader.WidthRes <<endl;
+	if(logFile) fprintf (logFile, "\tWidth Resolution : \t %d\n", bmpHeader.WidthRes);
 	unsigned char *cWidthRes = new unsigned char[FOUR_BYTES];	
 	for(int i = 0; i < FOUR_BYTES; i++)
 	{
@@ -128,7 +128,7 @@ void writeDataHeader(FILE *fhandle, BMPHeader bmpHeader, bool printInfo)
 	fwrite(cWidthRes,sizeof(unsigned char),FOUR_BYTES,fhandle);
 	delete cWidthRes;
 
-	if(printInfo) cout << "\tHeight Resolution : \t"<< bmpHeader.HeightRes <<endl;
+	if(logFile) fprintf (logFile, "\tHeight Resolution : \t %d\n", bmpHeader.HeightRes);
 	unsigned char *cHeigthRes = new unsigned char[FOUR_BYTES];	
 	for(int i = 0; i < FOUR_BYTES; i++)
 	{
@@ -138,7 +138,7 @@ void writeDataHeader(FILE *fhandle, BMPHeader bmpHeader, bool printInfo)
 	fwrite(cHeigthRes,sizeof(unsigned char),FOUR_BYTES,fhandle);
 	delete cHeigthRes;
 
-	if(printInfo) cout << "\tNumber of Colors Used : "<< bmpHeader.NumColors <<endl;
+	if(logFile) fprintf (logFile, "\tNumber of Colors Used : %d\n", bmpHeader.NumColors);
 	unsigned char *cNumColors = new unsigned char[FOUR_BYTES];	
 	for(int i = 0; i < FOUR_BYTES; i++)
 	{
@@ -148,7 +148,7 @@ void writeDataHeader(FILE *fhandle, BMPHeader bmpHeader, bool printInfo)
 	fwrite(cNumColors,sizeof(unsigned char),FOUR_BYTES,fhandle);
 	delete cNumColors;
 
-	if(printInfo) cout << "\tImportant Colors : \t"<< bmpHeader.ImpColors <<endl;
+	if(logFile) fprintf (logFile, "\tImportant Colors : \t %d\n", bmpHeader.ImpColors);
 	unsigned char *cImpColors = new unsigned char[FOUR_BYTES];	
 	for(int i = 0; i < FOUR_BYTES; i++)
 	{
@@ -166,9 +166,9 @@ void writeGreyPalette(FILE *fhandle) {
 		fprintf(fhandle,"%c%c%c%c",i,i,i,0);		
 }
 
-void writeRaster(FILE *fhandle, IMAGE *image, bool printInfo)
+void writeRaster(FILE *fhandle, IMAGE *image, FILE *logFile)
 {
-	//cout << image->height << " " << image->numColors << " " << image->width << endl;
+	//fprintf (logFile, "%d %d %d\n", image->height, image->numColors, image->width);
 	char *wnullDump;
 	int numPixels = (int)(image->width*image->height);
 	int zeroPads = (image->width*image->numColors) % FOUR_BYTES;
@@ -178,7 +178,7 @@ void writeRaster(FILE *fhandle, IMAGE *image, bool printInfo)
 		wnullDump = new char[FOUR_BYTES-zeroPads];
 		for(int i=0;i < FOUR_BYTES-zeroPads; i++)
 			*wnullDump = 0;
-		if(printInfo) printf("\tZeros = %d\n",FOUR_BYTES-zeroPads);
+		if(logFile) fprintf(logFile, "\tZeros = %d\n",FOUR_BYTES-zeroPads);
 		for(int n=0;n<image->height;n++)
 		{			
 			fwrite(image->imageData+n*image->width*image->numColors,image->numColors,image->width,fhandle);			

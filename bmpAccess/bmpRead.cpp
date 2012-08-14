@@ -12,14 +12,14 @@ using namespace std;
 
 using namespace std;
 
-void readFileHeader(FILE *fhandle, FileHeader *fileHeader, bool printInfo) {
+void readFileHeader(FILE *fhandle, FileHeader *fileHeader, FILE *logFile) {
 	unsigned char *nullDump;//I don't have to care about the data structure hence I use void *
 	
 	char *bmtype = new char[3];
 	fread(bmtype,sizeof(char),TWO_BYTES,fhandle);
 	bmtype[2] = '\0';
 	if (strcmp("BM",bmtype)) {
-		if(printInfo) printf("Error: Invalid BMP Header");
+		if(logFile) fprintf (logFile,"Error: Invalid BMP Header");
 		exit(-1);
 	}
 	delete bmtype;
@@ -29,7 +29,7 @@ void readFileHeader(FILE *fhandle, FileHeader *fileHeader, bool printInfo) {
 	fileHeader->fileSize = 0;
 	for(int byteIndex = 0; byteIndex < FOUR_BYTES; byteIndex++)
 		fileHeader->fileSize += (int)(*(cfsize+byteIndex)*MULTIPLY_BYTE_POSITION);//Remove pow and add shift << operators here// so you can remove math.h
-	if(printInfo) cout << "\tFile Size : \t\t"<< fileHeader->fileSize <<endl;
+	if(logFile) fprintf (logFile, "\tFile Size : \t\t%d\n", fileHeader->fileSize);
 	delete cfsize;
 
 	nullDump = new unsigned char[FOUR_BYTES];
@@ -41,11 +41,11 @@ void readFileHeader(FILE *fhandle, FileHeader *fileHeader, bool printInfo) {
 	fileHeader->dataOffset = 0;
 	for(int byteIndex = 0; byteIndex < FOUR_BYTES; byteIndex++)
 		fileHeader->dataOffset += (int)(*(cdataOffset+byteIndex)*MULTIPLY_BYTE_POSITION);
-	if(printInfo) cout << "\tData Offset : \t\t"<< fileHeader->dataOffset <<endl;
+	if(logFile) fprintf (logFile, "\tData Offset : \t\t%d\n", fileHeader->dataOffset);
 	delete cdataOffset;
 }
 
-void readDataHeader(FILE *fhandle, BMPHeader *bmpHeader, bool printInfo) {
+void readDataHeader(FILE *fhandle, BMPHeader *bmpHeader, FILE *logFile) {
 	//BMPHeader bmpHeader;
 
 	unsigned char *chsize = new unsigned char[FOUR_BYTES];
@@ -53,7 +53,7 @@ void readDataHeader(FILE *fhandle, BMPHeader *bmpHeader, bool printInfo) {
 	bmpHeader->headerSize = 0;
 	for(int byteIndex = 0; byteIndex < FOUR_BYTES; byteIndex++)
 		bmpHeader->headerSize += (int)(*(chsize+byteIndex)*MULTIPLY_BYTE_POSITION);
-	if(printInfo) cout << "\tData Header Size : \t"<< bmpHeader->headerSize <<endl;
+	if(logFile) fprintf (logFile, "\tData Header Size : \t%d\n", bmpHeader->headerSize);
 	delete chsize;
 
 	unsigned char *cBMPwidth = new unsigned char[FOUR_BYTES];
@@ -61,7 +61,7 @@ void readDataHeader(FILE *fhandle, BMPHeader *bmpHeader, bool printInfo) {
 	bmpHeader->BMPwidth = 0;
 	for(int byteIndex = 0; byteIndex < FOUR_BYTES; byteIndex++)
 		bmpHeader->BMPwidth += (int)(*(cBMPwidth+byteIndex)*MULTIPLY_BYTE_POSITION);
-	if(printInfo) cout << "\tImage Width : \t\t"<< bmpHeader->BMPwidth <<endl;
+	if(logFile) fprintf (logFile, "\tImage Width : \t\t%d\n", bmpHeader->BMPwidth);
 	delete cBMPwidth;
 
 	unsigned char *cBMPheight = new unsigned char[FOUR_BYTES];
@@ -69,19 +69,19 @@ void readDataHeader(FILE *fhandle, BMPHeader *bmpHeader, bool printInfo) {
 	bmpHeader->BMPheight = 0;
 	for(int byteIndex = 0; byteIndex < FOUR_BYTES; byteIndex++)
 		bmpHeader->BMPheight += (int)(*(cBMPheight+byteIndex)*MULTIPLY_BYTE_POSITION);
-	if(printInfo) cout << "\tImage Height : \t\t" << bmpHeader->BMPheight <<endl;
+	if(logFile) fprintf (logFile, "\tImage Height : \t\t%d\n", bmpHeader->BMPheight);
 	delete cBMPheight;
 
 	unsigned char *cCPlanes = new unsigned char[TWO_BYTES];
 	fread(cCPlanes,sizeof(unsigned char),TWO_BYTES,fhandle);
 	bmpHeader->CPlanes = *cCPlanes+*(cCPlanes+1)*256;
-	if(printInfo) cout << "\tNumber of Color Planes : "<< bmpHeader->CPlanes <<endl;
+	if(logFile) fprintf (logFile, "\tNumber of Color Planes : %d\n", bmpHeader->CPlanes);
 	delete cCPlanes;
 
 	unsigned char *cbitCount = new unsigned char[TWO_BYTES];
 	fread(cbitCount,sizeof(unsigned char),TWO_BYTES,fhandle);
 	bmpHeader->bitCount = *cbitCount+*(cbitCount+1)*256;
-	if(printInfo) cout << "\tBits per Pixel : \t"<< bmpHeader->bitCount <<endl;
+	if(logFile) fprintf (logFile, "\tBits per Pixel : \t%d\n", bmpHeader->bitCount);
 	delete cbitCount;
 
 	unsigned char *cCompression = new unsigned char[FOUR_BYTES];
@@ -89,7 +89,7 @@ void readDataHeader(FILE *fhandle, BMPHeader *bmpHeader, bool printInfo) {
 	bmpHeader->Compression = 0;
 	for(int byteIndex = 0; byteIndex < FOUR_BYTES; byteIndex++)
 		bmpHeader->Compression += (int)(*(cCompression+byteIndex)*MULTIPLY_BYTE_POSITION);
-	if(printInfo) cout << "\tCompression : \t\t"<< bmpHeader->Compression <<endl;
+	if(logFile) fprintf (logFile, "\tCompression : \t\t%d\n", bmpHeader->Compression);
 	delete cCompression;
 
 	unsigned char *cImageDataSize = new unsigned char[FOUR_BYTES];
@@ -97,7 +97,7 @@ void readDataHeader(FILE *fhandle, BMPHeader *bmpHeader, bool printInfo) {
 	bmpHeader->ImageDataSize = 0;
 	for(int byteIndex = 0; byteIndex < FOUR_BYTES; byteIndex++)
 		bmpHeader->ImageDataSize += (int)(*(cImageDataSize+byteIndex)*MULTIPLY_BYTE_POSITION);
-	if(printInfo) cout << "\tRaster Size : \t\t"<< bmpHeader->ImageDataSize <<endl;
+	if(logFile) fprintf (logFile, "\tRaster Size : \t\t%d\n", bmpHeader->ImageDataSize);
 	delete cImageDataSize;
 
 	unsigned char *cWidthRes = new unsigned char[FOUR_BYTES];
@@ -105,7 +105,7 @@ void readDataHeader(FILE *fhandle, BMPHeader *bmpHeader, bool printInfo) {
 	bmpHeader->WidthRes = 0;
 	for(int byteIndex = 0; byteIndex < FOUR_BYTES; byteIndex++)
 		bmpHeader->WidthRes += (int)(*(cWidthRes+byteIndex)*MULTIPLY_BYTE_POSITION);
-	if(printInfo) cout << "\tWidth Resolution : \t"<< bmpHeader->WidthRes <<endl;
+	if(logFile) fprintf (logFile, "\tWidth Resolution : \t%d\n", bmpHeader->WidthRes);
 	delete cWidthRes;
 
 	unsigned char *cHeigthRes = new unsigned char[FOUR_BYTES];
@@ -113,7 +113,7 @@ void readDataHeader(FILE *fhandle, BMPHeader *bmpHeader, bool printInfo) {
 	bmpHeader->HeightRes = 0;
 	for(int byteIndex = 0; byteIndex < FOUR_BYTES; byteIndex++)
 		bmpHeader->HeightRes += (int)(*(cHeigthRes+byteIndex)*MULTIPLY_BYTE_POSITION);
-	if(printInfo) cout << "\tHeight Resolution : \t"<< bmpHeader->HeightRes <<endl;
+	if(logFile) fprintf (logFile, "\tHeight Resolution : \t%d\n", bmpHeader->HeightRes);
 	delete cHeigthRes;
 
 	unsigned char *cNumColors = new unsigned char[FOUR_BYTES];
@@ -121,7 +121,7 @@ void readDataHeader(FILE *fhandle, BMPHeader *bmpHeader, bool printInfo) {
 	bmpHeader->NumColors = 0;
 	for(int byteIndex = 0; byteIndex < FOUR_BYTES; byteIndex++)
 		bmpHeader->NumColors += (int)(*(cNumColors+byteIndex)*MULTIPLY_BYTE_POSITION);
-	if(printInfo) cout << "\tNumber of Colors Used : "<< bmpHeader->NumColors <<endl;
+	if(logFile) fprintf (logFile, "\tNumber of Colors Used : %d\n", bmpHeader->NumColors);
 	delete cNumColors;
 
 	unsigned char *cImpColors = new unsigned char[FOUR_BYTES];
@@ -129,11 +129,11 @@ void readDataHeader(FILE *fhandle, BMPHeader *bmpHeader, bool printInfo) {
 	bmpHeader->ImpColors = 0;
 	for(int byteIndex = 0; byteIndex < FOUR_BYTES; byteIndex++)
 		bmpHeader->ImpColors += (int)(*(cImpColors+byteIndex)*MULTIPLY_BYTE_POSITION);
-	if(printInfo) cout << "\tImportant Colors : \t"<< bmpHeader->ImpColors <<endl;
+	if(logFile) fprintf (logFile, "\tImportant Colors : \t%d\n", bmpHeader->ImpColors);
 	delete cImpColors;
 }
 
-IMAGE* readRaster(FILE *fhandle,FileHeader *fileHeader, BMPHeader *bmpHeader, bool printInfo) {
+IMAGE* readRaster(FILE *fhandle,FileHeader *fileHeader, BMPHeader *bmpHeader, FILE *logFile) {
 	unsigned char *nullDump;//I don't have to care about the data structure hence I use void *
 	int numPixels = (int)(bmpHeader->BMPwidth*bmpHeader->BMPheight);
 
@@ -148,7 +148,7 @@ IMAGE* readRaster(FILE *fhandle,FileHeader *fileHeader, BMPHeader *bmpHeader, bo
 	if(zeroPads == 0) fread(image->imageData,1,image->numColors*numPixels,fhandle);
 	else {
 		nullDump = new unsigned char[FOUR_BYTES-zeroPads];
-		if(printInfo) printf("\tZeros = %d\n",FOUR_BYTES-zeroPads);
+		if(logFile) fprintf (logFile,"\tZeros = %d\n",FOUR_BYTES-zeroPads);
 		for(int row = 0; row < image->height; row++) {
 			fread(image->imageData+row*image->width*image->numColors,image->numColors,image->width,fhandle);//fread(imageData+n*BMPwidth,sizeof(unsigned char),BMPwidth*sizeof(BGR),fhandle);//THis can also be done
 			fread(nullDump,sizeof(unsigned char),FOUR_BYTES-zeroPads,fhandle);
@@ -160,7 +160,7 @@ IMAGE* readRaster(FILE *fhandle,FileHeader *fileHeader, BMPHeader *bmpHeader, bo
 }
 
 
-IMAGE* readLuminance(FILE *fhandle, FileHeader *fileHeader, BMPHeader *bmpHeader, bool printInfo)
+IMAGE* readLuminance(FILE *fhandle, FileHeader *fileHeader, BMPHeader *bmpHeader, FILE *logFile)
 {
 	unsigned char *nullDump;//I don't have to care about the data structure hence I use void *
 	int numPixels = (int)(bmpHeader->BMPwidth*bmpHeader->BMPheight);
@@ -186,7 +186,7 @@ IMAGE* readLuminance(FILE *fhandle, FileHeader *fileHeader, BMPHeader *bmpHeader
 	else
 	{
 		nullDump = new unsigned char[FOUR_BYTES-zeroPads];
-		if(printInfo) printf("\tZeros = %d\n",FOUR_BYTES-zeroPads);
+		if(logFile) fprintf (logFile,"\tZeros = %d\n",FOUR_BYTES-zeroPads);
 		for(int row = 0; row < image->height; row++) {
 			for(int col = 0; col < image->width; col++) {
 				fread(tempBGR,input_numColors,1,fhandle);

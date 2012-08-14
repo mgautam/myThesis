@@ -4,6 +4,8 @@
 #include <Features/featureStruct.h>
 #include <Features/coordinates.h>
 
-COORDS* findNearestNeighbor (FEATURES TrainFeature,FEATURES TestFeature, double Threshold = -1);
+#include <stdio.h>
+
+COORDS* findNearestNeighbor (FEATURES TrainFeature,FEATURES TestFeature, FILE *logFile = stdout, double Threshold = -1);
 
 #endif

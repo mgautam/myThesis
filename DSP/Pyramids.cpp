@@ -10,8 +10,9 @@
 #include <math.h>
 using namespace std;
 
- GIMAGE** GaussianPyramid(GIMAGE *inImage, GTYPE stepSize, int numLayers, char *PROJECT_FOLDER) {
-	cout << "\t Gaussian Pyramid Formation Begins Now" << endl;
+ GIMAGE** GaussianPyramid(GIMAGE *inImage, GTYPE stepSize, int numLayers, FILE *logFile, char *PROJECT_FOLDER)
+ {
+	fprintf (logFile, "\t Gaussian Pyramid Formation Begins Now\n");
 
 	GIMAGE **Pyramid = new GIMAGE*[numLayers];
 
@@ -22,7 +23,7 @@ using namespace std;
 	
 	char *filename = new char[100];
 
-	cout << "\t   Level " << 1 << "/" << numLayers << endl;
+	fprintf (logFile, "\t   Level 1 / %d\n", numLayers);
 	int outWidth, outHeight;
 		
 	outHeight = (int) floor((GTYPE) (inImage->height<<1));
@@ -38,7 +39,7 @@ using namespace std;
 	
 	GIMAGE *tmpImage;
 	for(int i=0; i < numLayers-1; i++) {	
-		cout << "\t   Level " << i+2 << "/" << numLayers << endl;
+		fprintf (logFile, "\t   Level %d / %d\n", i+2, numLayers);
 
 		tmpImage = createImage(Pyramid[i]->width, Pyramid[i]->height,1);
 		imFilter(Pyramid[i], filter_cofficients, filter_start, filter_length, tmpImage);
@@ -56,14 +57,15 @@ using namespace std;
 		}		
 	}	
 	delete filter_cofficients;	
-	cout << "\t Gaussian Pyramid Formation Successfully Completed!\n" << endl;
+	fprintf (logFile, "\t Gaussian Pyramid Formation Successfully Completed!\n\n");
 	
 	return Pyramid;
 }
 
 
-GIMAGE**** LaplacianPyramid(GIMAGE *inImage, GTYPE sigma, int octaves, int numBlurs, char *PROJECT_FOLDER){
-	cout << "\t Laplacian Pyramid Formation Begins Now" << endl;
+GIMAGE**** LaplacianPyramid(GIMAGE *inImage, GTYPE sigma, int octaves, int numBlurs, FILE *logFile, char *PROJECT_FOLDER)
+{
+	fprintf (logFile, "\t Laplacian Pyramid Formation Begins Now\n");
 
 	GIMAGE**** Pyramid = new GIMAGE***[2];
 	Pyramid[0] = new GIMAGE**[octaves];
@@ -84,7 +86,7 @@ GIMAGE**** LaplacianPyramid(GIMAGE *inImage, GTYPE sigma, int octaves, int numBl
 	GIMAGE* tmpImage = cloneImage(inImage);
 	for(int i=0; i < octaves; i++) {
 		//cout << "\t   Octave " << i+1 << "/" << octaves << "\t Blur " << 1 << "/" << numBlurs << endl;
-		cout << "\t" << sigma*pow(2.0,(GTYPE)i) << " ";
+		fprintf (logFile, "\t%lf ", sigma*pow(2.0,(GTYPE)i));
 		Pyramid[0][i][0] = createImage( tmpImage->width, tmpImage->height, 1 );
 		GaussianFilter(0, sigma, filter_start, filter_length, filter_coefficients);
 		imFilter(tmpImage, filter_coefficients, filter_start, filter_length, Pyramid[0][i][0]);
@@ -95,7 +97,7 @@ GIMAGE**** LaplacianPyramid(GIMAGE *inImage, GTYPE sigma, int octaves, int numBl
 
 		for(int j=0; j < numBlurs-1; j++) {	
 			//cout << "\t   Octave " << i+1 << "/" << octaves << "\t Blur " << j+2 << "/" << numBlurs << endl;
-			cout << sigma*pow(2.0,(GTYPE)i+(j+1)/(GTYPE)(numBlurs-3)) << " ";
+			fprintf (logFile, "%7.4lf ", sigma*pow(2.0,(GTYPE)i+(j+1)/(GTYPE)(numBlurs-3)) );
 
 			Pyramid[0][i][j+1] = createImage( tmpImage->width, tmpImage->height, 1 );			
 			GaussianFilter(0, sigma*pow(2.0,(GTYPE)(j+1)/(GTYPE)(numBlurs-3)), filter_start, filter_length, filter_coefficients);
@@ -117,12 +119,12 @@ GIMAGE**** LaplacianPyramid(GIMAGE *inImage, GTYPE sigma, int octaves, int numBl
 		releaseImage(tmpImage);
 		tmpImage = createImage((Pyramid[0][i][numBlurs-3]->width) / 2,(Pyramid[0][i][numBlurs-3]->height) / 2,1);
 		resample(Pyramid[0][i][numBlurs-3], 1, 2, tmpImage);
-		cout << endl;
+		fprintf (logFile, "\n");
 	}
 	releaseImage(tmpImage);
 
 	delete filter_coefficients;
-	cout << "\t Laplacian Pyramid Formation Successfully Completed!" << endl;
+	fprintf (logFile, "\t Laplacian Pyramid Formation Successfully Completed!\n");
 
 	return Pyramid;
 }
