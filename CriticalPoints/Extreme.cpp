@@ -1,8 +1,8 @@
-#include <DSP/Pyramids.h>
-#include <CriticalPoints/Extreme.h>
-
 #include <iostream>
 using namespace std;
+
+#include <DSP/Pyramids.h>
+#include <CriticalPoints/Extreme.h>
 
 // A pixel's Neighbouring pixels in same scale
 #define NUMBER_OF_NEIGHBORS 8
@@ -62,6 +62,6 @@ using namespace std;
 		/* Edge Response Removal */
 
 
-		//cout << "\t\tNumber of Extrema Points:" << numExtreme << endl;
+//		cout << "\t\tNumber of Extrema Points:" << numExtreme << endl;
 		return numExtreme;
 }

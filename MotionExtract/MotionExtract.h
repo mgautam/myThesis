@@ -3,6 +3,6 @@
 
 #include <Matrix/matrix.h>
 
-void showMotion (MATRIX AffineMatrix, FILE *output = 0);
+MATRIX* showMotion (MATRIX AffineMatrix, FILE *output = 0, FILE *logFile = stdout);
 
 #endif

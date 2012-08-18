@@ -19,9 +19,13 @@ using namespace std;
 #define NUM_OCTAVES 4
 #define NUM_BLURS 5
 
-void BuildFeature (char* srcFile, int frameIndex, char* ProjectFolder) {
-	
-	IMAGE *visual = readGrey(srcFile);
+// Frame Index whose intermediate images
+// to be written to Disk
+#define FRAME_TO_WRITE -1
+
+void BuildFeature (char* imFile, int frameIndex, char* ProjectFolder, FILE *logFile)
+{	
+	IMAGE *visual = readGrey(imFile);
 	GIMAGE *gvisual = Gtype(visual);
 	releaseImage (visual);
 
@@ -29,8 +33,17 @@ void BuildFeature (char* srcFile, int frameIndex, char* ProjectFolder) {
 	resample(gvisual,2,1,inImage);
 	releaseImage (gvisual);
 
-	GIMAGE**** Pyramid = LaplacianPyramid(inImage, sigma,  NUM_OCTAVES, NUM_BLURS, ProjectFolder);
+	GIMAGE**** Pyramid;
+		if (frameIndex == FRAME_TO_WRITE) // Write Pyramid to disk only for training image
+		Pyramid = LaplacianPyramid(inImage, sigma,  NUM_OCTAVES, NUM_BLURS, logFile, ProjectFolder);
+	else
+		Pyramid = LaplacianPyramid(inImage, sigma,  NUM_OCTAVES, NUM_BLURS, logFile);
+
 	releaseImage(inImage);
+
+
+
+	fprintf (logFile, "\n\tBuilding Feature Keys...\n");
 
 	GIMAGE *lowImage,*highImage;
 	IMAGE *extremeImage;
@@ -39,11 +52,11 @@ void BuildFeature (char* srcFile, int frameIndex, char* ProjectFolder) {
 
 	for(int i = 0; i < NUM_OCTAVES; i++)
 	{
-		cout << "\t   Octave " << i+1 << "/" << NUM_OCTAVES ;
+		fprintf (logFile, "\t   Octave %d/%d", i+1, NUM_OCTAVES) ;
 		for(int j = 1; j < NUM_BLURS-2; j++)
 		{
 
-			cout << "\t Blur " << j << "/" << NUM_BLURS;
+			fprintf (logFile, "\t Blur %d/%d", j, NUM_BLURS);
 
 			highImage = Pyramid[1][i][j-1];
 
@@ -51,8 +64,12 @@ void BuildFeature (char* srcFile, int frameIndex, char* ProjectFolder) {
 
 			extremeImage = createimage( Pyramid[1][i][j]->width, Pyramid[1][i][j]->height , 1 );
 			numExtrema += findExtrema(Pyramid[1][i][j],lowImage,highImage,extremeImage);
-			sprintf(fileName,"%s\\03.Extreme_Pyramid\\Image_Xterm(%d%d).bmp",ProjectFolder,i,j);
-			writeImage(fileName,extremeImage);
+
+			if (frameIndex == FRAME_TO_WRITE) // Write Extrema file only for training
+			{
+				sprintf(fileName,"%s/03.Extreme_Pyramid/Image_Xterm(%d%d).bmp",ProjectFolder,i,j);
+				writeImage(fileName,extremeImage);
+			}
 
 			inImage = Pyramid[0][i][j];//j-1?
 			totKeys += featureCalc(inImage,extremeImage,i,j,ProjectFolder);
@@ -61,15 +78,13 @@ void BuildFeature (char* srcFile, int frameIndex, char* ProjectFolder) {
 			//visual2(inImage->width, inImage->height, i,j,ProjectFolder);	
 			releaseImage(extremeImage);			
 		}
-		cout << endl;
+		fprintf (logFile, "\n");
 	}
 
 	// Garbage collection:Pyramid
 	releaseLaplacianPyramid (Pyramid, NUM_OCTAVES, NUM_BLURS);
 
 	writeAllFeatures(sigma,NUM_OCTAVES,NUM_BLURS,ProjectFolder,frameIndex);
-	
 	//visual3(*visual,ProjectFolder);
-	cout << "Total Number of Keys: "<< totKeys << " Extrema: " << numExtrema << endl;
-		
+	fprintf (logFile, "\tTotal Number of Keys: %d  Extrema: %d\n", totKeys, numExtrema);
 }

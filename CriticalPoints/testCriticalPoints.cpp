@@ -1,21 +1,21 @@
+#include <stdio.h>
+#include <iostream>
+using namespace std;
+
 #include <DSP/resample.h>
 #include <DSP/Pyramids.h>
 #include <CriticalPoints/Extreme.h>
 #include <CriticalPoints/testCriticalPoints.h>
 #include <bmpAccess/bmpEngine.h>
 
-#include <stdio.h>
-#include <iostream>
-using namespace std;
-
-#define TRAIN_FOLDER ".\\TestRepo\\01.Training"
-#define TEST_FOLDER ".\\TestRepo\\02.Test"
+#define TRAIN_FOLDER "./TestRepo/01.Training"
+#define TEST_FOLDER "./TestRepo/02.Test"
 #define sigma 1/1.4142
 #define numOctaves 4
 #define numBlurs 5
 
 void testCriticalPoints (void) {
-	char *srcFile = ".\\TestRepo\\00.Test_Images\\lena.bmp";
+	char *imFile = "./TestRepo/00.Test_Images/lena.bmp";
 	char *ProjectFolder = TRAIN_FOLDER;
 	IMAGE *visual;
 	GIMAGE *inImage,*lowImage,*highImage;
@@ -25,10 +25,10 @@ void testCriticalPoints (void) {
 	
 	
 	inImage = createImage(1024,1024,1);
-	visual = readGrey(srcFile);
+	visual = readGrey(imFile);
 	resample(Gtype(visual),2,1,inImage);
-	//inImage = Gtype(readGrey(imageName));//".\\TestRepo\\00.Test_Images\\testSquare.bmp"));
-	GIMAGE**** Pyramid = LaplacianPyramid(inImage, sigma,  numOctaves, numBlurs, ProjectFolder);
+	//inImage = Gtype(readGrey(imageName));//"./TestRepo/00.Test_Images/testSquare.bmp"));
+	GIMAGE**** Pyramid = LaplacianPyramid(inImage, sigma,  numOctaves, numBlurs, stdout, ProjectFolder);
 	releaseImage(inImage);
 
 	for(int i = 0; i < numOctaves; i++)
@@ -42,7 +42,7 @@ void testCriticalPoints (void) {
 
 			extremeImage = createimage( Pyramid[1][i][j]->width, Pyramid[1][i][j]->height , 1 );
 			numExtrema += findExtrema(Pyramid[1][i][j],lowImage,highImage,extremeImage);
-			sprintf(fileName,"%s\\03.Extreme_Pyramid\\Image_Xterm(%d%d).bmp",ProjectFolder,i,j);
+			sprintf(fileName,"%s/03.Extreme_Pyramid/Image_Xterm(%d%d).bmp",ProjectFolder,i,j);
 			writeImage(fileName,extremeImage);
 		}
 

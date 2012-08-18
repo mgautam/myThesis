@@ -47,7 +47,7 @@ void testMatchFeatures (void) {
 	}
 
 
-	COORDS* coordinates = findNearestNeighbor (TrainFeature,TestFeature, 16);
+	COORDS* coordinates = findNearestNeighbor (TrainFeature,TestFeature, stdout, 16);
 
 	for (int FeatureIndex = 0; FeatureIndex < coordinates->Number_of_Coordinates; FeatureIndex++) {
 		cout << "Train:(" << coordinates[0].x[FeatureIndex] << "," << coordinates[0].y[FeatureIndex] << ")";

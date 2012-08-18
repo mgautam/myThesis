@@ -4,9 +4,9 @@
 #include <iostream>
 #include <bmpAccess/bmpStructs.h>
 
-void readFileHeader(FILE *fhandle, FileHeader *fileHeader, bool printInfo);
-void readDataHeader(FILE *fhandle, BMPHeader *bmpHeader, bool printInfo);
+void readFileHeader(FILE *fhandle, FileHeader *fileHeader, FILE *logFile);
+void readDataHeader(FILE *fhandle, BMPHeader *bmpHeader, FILE *logFile);
 
-IMAGE* readRaster(FILE *fhandle, FileHeader *fileHeader, BMPHeader *bmpHeader, bool printInfo);
-IMAGE* readLuminance(FILE *fhandle, FileHeader *fileHeader, BMPHeader *bmpHeader, bool printInfo);
+IMAGE* readRaster(FILE *fhandle, FileHeader *fileHeader, BMPHeader *bmpHeader, FILE *logFile);
+IMAGE* readLuminance(FILE *fhandle, FileHeader *fileHeader, BMPHeader *bmpHeader, FILE *logFile);
 #endif

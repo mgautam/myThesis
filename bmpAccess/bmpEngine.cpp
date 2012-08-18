@@ -7,39 +7,39 @@ using namespace std;
 #include <bmpAccess/bmpWrite.h>
 #include <bmpAccess/bmpEngine.h>
 
- IMAGE* readRGB(char *fileName, bool printInfo){
-	if(printInfo) printf("Reading File...\n");
+ IMAGE* readRGB(char *fileName, FILE *logFile){
+	if(logFile) fprintf (logFile,"Reading File...\n");
 	FileHeader fileHeader;
 	BMPHeader bmpHeader;
 	
 	FILE *fhandle = fopen(fileName,"rb");	
-	readFileHeader(fhandle, &fileHeader, printInfo);
-	readDataHeader(fhandle, &bmpHeader, printInfo);
-	IMAGE *image = readRaster(fhandle, &fileHeader, &bmpHeader, printInfo);
+	readFileHeader(fhandle, &fileHeader, logFile);
+	readDataHeader(fhandle, &bmpHeader, logFile);
+	IMAGE *image = readRaster(fhandle, &fileHeader, &bmpHeader, logFile);
 	fclose(fhandle);
 
 	return image;
 }
 
- IMAGE* readGrey(char *fileName, bool printInfo){
-	if(printInfo) printf("Reading File...\n");
+ IMAGE* readGrey(char *fileName, FILE *logFile){
+	if(logFile) fprintf (logFile,"Reading File...\n");
 	FileHeader fileHeader;
 	BMPHeader bmpHeader;
 
 	FILE *fhandle = fopen(fileName,"rb");	
-	readFileHeader(fhandle, &fileHeader, printInfo);	
-	readDataHeader(fhandle, &bmpHeader, printInfo);
+	readFileHeader(fhandle, &fileHeader, logFile);	
+	readDataHeader(fhandle, &bmpHeader, logFile);
 	
 	IMAGE *image;
-	if(bmpHeader.bitCount == 8) image = readRaster(fhandle, &fileHeader, &bmpHeader, printInfo);
-	else image = readLuminance(fhandle, &fileHeader, &bmpHeader, printInfo);
+	if(bmpHeader.bitCount == 8) image = readRaster(fhandle, &fileHeader, &bmpHeader, logFile);
+	else image = readLuminance(fhandle, &fileHeader, &bmpHeader, logFile);
 	fclose(fhandle);
 
 	return image;
 }
 
- void writeImage(char *fileName, IMAGE *image, bool printInfo) {
-	if(printInfo) printf("Writing File...\n");
+ void writeImage(char *fileName, IMAGE *image, FILE *logFile) {
+	if(logFile) fprintf (logFile,"Writing File...\n");
 
 	BMPHeader bmpHeader;
 	FileHeader fileHeader;
@@ -48,20 +48,20 @@ using namespace std;
 	createFileHeader(&bmpHeader,&fileHeader);
 	
 	FILE *fhandle = fopen(fileName,"wb");
-	writeFileHeader(fhandle, fileHeader, printInfo);
-	writeDataHeader(fhandle, bmpHeader, printInfo);
+	writeFileHeader(fhandle, fileHeader, logFile);
+	writeDataHeader(fhandle, bmpHeader, logFile);
 	if(image->numColors == 1) writeGreyPalette(fhandle);
-	writeRaster(fhandle, image, printInfo);
+	writeRaster(fhandle, image, logFile);
 	fclose(fhandle);
 }
- void writeImage(char *fileName, GIMAGE *image, bool printInfo){
+ void writeImage(char *fileName, GIMAGE *image, FILE *logFile){
 	IMAGE *outImage =  uChar(image);
-	writeImage(fileName, outImage, printInfo);
+	writeImage(fileName, outImage, logFile);
 	releaseImage (outImage);
 }
- void writeImageNorm(char *fileName, GIMAGE *image, bool printInfo){
+ void writeImageNorm(char *fileName, GIMAGE *image, FILE *logFile){
 	IMAGE *outImage =  uCharNorm(image);
-	writeImage(fileName, outImage, printInfo);
+	writeImage(fileName, outImage, logFile);
 	releaseImage (outImage);
 }
 

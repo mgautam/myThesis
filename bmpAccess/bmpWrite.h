@@ -6,9 +6,9 @@
 
 using namespace std;
 
-void writeFileHeader(FILE *fhandle, FileHeader fileHeader, bool printInfo);
-void writeDataHeader(FILE *fhandle, BMPHeader bmpHeader, bool printInfo);
+void writeFileHeader(FILE *fhandle, FileHeader fileHeader, FILE *logFile);
+void writeDataHeader(FILE *fhandle, BMPHeader bmpHeader, FILE *logFile);
 void writeGreyPalette(FILE *fhandle);
-void writeRaster(FILE *fhandle, IMAGE *image, bool printInfo);
+void writeRaster(FILE *fhandle, IMAGE *image, FILE *logFile);
 
 #endif

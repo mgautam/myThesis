@@ -2,17 +2,20 @@
 #include <stdio.h>
 #include <math.h>
 
-COORDS* findNearestNeighbor (FEATURES TrainFeature,FEATURES TestFeature, double Threshold) {
+COORDS* findNearestNeighbor (FEATURES TrainFeature,FEATURES TestFeature, FILE *logFile, double Threshold)
+{
+	fprintf (logFile, "\n\tFinding Nearest Neighbor...\n");
 	int FeatureVectorLength = TrainFeature.FeatureVectorLength; // == TestFeature.FeatureVectorLength
 	int numTrainFeatures = TrainFeature.Number_of_Features;
 	int numTestFeatures = TestFeature.Number_of_Features;
 
 	COORDS *coordinates = new COORDS[2];
-	coordinates[0].Number_of_Coordinates = numTrainFeatures; // Number of Corresponding Training object 2D Position vectors
+	//coordinates[0].Number_of_Coordinates = numTrainFeatures; // Number of Corresponding Training object 2D Position vectors
 	coordinates[0].x = new double [numTrainFeatures];
 	coordinates[0].y = new double [numTrainFeatures];
 	coordinates[0].scores = new double [numTrainFeatures];
-	coordinates[1].Number_of_Coordinates = numTestFeatures; // Number of Testing object 2D Position vectors
+
+	//coordinates[1].Number_of_Coordinates = numTestFeatures; // Number of Testing object 2D Position vectors
 	coordinates[1].x = new double [numTestFeatures];
 	coordinates[1].y = new double [numTestFeatures];
 	coordinates[1].scores = new double [numTestFeatures];
@@ -20,10 +23,10 @@ COORDS* findNearestNeighbor (FEATURES TrainFeature,FEATURES TestFeature, double 
 
 	double Distance,minDistance;
 	int nearNeighborIndex = 0;
-	for ( int TestIndex = 0; TestIndex < numTestFeatures; TestIndex++) // Change 1000 to numTestFeatures
+	for ( int TestIndex = 0; TestIndex < numTestFeatures; TestIndex++) // Change 100 to numTestFeatures
 	{ 
 		
-		if ( TestIndex % 100 == 0 ) printf ("%d ",TestIndex); // Remove
+		if ( TestIndex % 1000 == 0 ) fprintf (logFile,"%d ",TestIndex); // Remove
 	
 		coordinates[1].x[nearNeighborIndex] = TestFeature.features[TestIndex].x;
 		coordinates[1].y[nearNeighborIndex] = TestFeature.features[TestIndex].y;
@@ -60,11 +63,11 @@ COORDS* findNearestNeighbor (FEATURES TrainFeature,FEATURES TestFeature, double 
 
 	}
 	
-	printf ("%d\n",numTestFeatures); // Remove
+	fprintf (logFile,"%d\n",numTestFeatures); // Remove
 
 	coordinates[0].Number_of_Coordinates = nearNeighborIndex; // Only the Number of Corresponding nearest Neighbor Training object 2D Position vectors
 	coordinates[1].Number_of_Coordinates = nearNeighborIndex; // Only the Number of Corresponding nearest Neighbor Test object 2D Position vectors
 
-
+	fprintf (logFile, "\tNearest Neighbors Found.\n");
 	return coordinates;
 }
