@@ -18,18 +18,18 @@ void testAffineModel (void) {
 	
 	cout << "Test Vectors:" << endl;
 	for (int index = 0; index < NUMBER_OF_PIXELS; index++) {
-		initial.x[index] = index;
-		initial.y[index] = rand();
+		initial.x[index] = index;// + 256;
+		initial.y[index] = rand();// + 256;
 	
 		cout << "(" << initial.x[index] << "," << initial.y[index] << ")" ;
 
-		final.x[index] = 1*initial.x[index] + 0*initial.y[index] + 2;//6,7
-		final.y[index] = 0*initial.x[index] + 1*initial.y[index] + 3;//1,13
+		final.x[index] = 1*initial.x[index] + 0*initial.y[index] + 2;// + 256;//6,7
+		final.y[index] = 0*initial.x[index] + 1*initial.y[index] + 3;// + 256;//1,13
 
 		cout << " => (" << final.x[index] << "," << final.y[index] << ")" << endl;
 
 	}
 
 	cout << endl << "Estimated AffineMatrix:" << endl;
-	cout << fitAffineMatrix ( initial, final ) << endl;
+	cout << fitAffineMatrix ( initial, final, 0, 0 ) << endl;
 }

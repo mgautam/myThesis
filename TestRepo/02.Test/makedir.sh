@@ -1,4 +1,5 @@
 #!/bin/bash
+mkdir "00.Frames"
 mkdir "01.Gaussian_Pyramid"
 mkdir "02.Laplacian_Pyramid"
 mkdir "03.Extreme_Pyramid"
@@ -7,4 +8,5 @@ mkdir "05.Orientation_Pyramid"
 mkdir "06.Mag_Pyramid"
 mkdir "07.Feature_Keys"
 mkdir "08.MagOri_Pyramid2"
-mkdir "KeysinFrame"
+mkdir "09.KeysinFrame"
+mkdir "10.Result"

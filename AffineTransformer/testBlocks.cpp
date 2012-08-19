@@ -54,7 +54,7 @@ void testBlocks (void) {
 		AffineData[0][1] = - sin (theta) , AffineData[1][1] = cos (theta) , AffineData[2][1] = 0;//- 50 + i;
 		//cout << AffineModel << endl << endl;
 
-		outImage = render_selection ( NUM_VERTICES, &Polygon, &AffineModel, inImage, color_contrast, color_brightness);
+		outImage = render_selection ( &Polygon, &AffineModel, inImage, color_contrast, color_brightness);
 		
 		sprintf (filename,"TestRepo/blocked/%d.bmp",i);
 		cout << filename << endl;

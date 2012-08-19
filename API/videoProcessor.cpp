@@ -6,16 +6,16 @@
 #include <ModelAffine/coordinates.h>
 #include <ModelAffine/fitAffineMatrix.h>
 #include <MotionExtract/MotionExtract.h>
+#include <AffineTransformer/blocks.h>
 
 #include <string.h>
 #include <iostream>
 using namespace std;
 
-void processFrames (double threshold, FILE *RotationDataFile, FILE *logFile) {
-
+void processFrames (MATRIX *selection_box, double threshold, FILE *RotationDataFile, FILE *logFile)
+{
 	char *filename = new char[100];
-	sprintf (filename,"./TestRepo/00.Test_Images/Frames/0.bmp");//subject.bmp
-	
+	sprintf (filename,"./TestRepo/01.Training/train.bmp");//subject.bmp
 	BuildFeature (filename, -1, "./TestRepo/01.Training", logFile);
 
 	FEATURES train;
@@ -40,8 +40,8 @@ void processFrames (double threshold, FILE *RotationDataFile, FILE *logFile) {
 		fread ( &(train.features[index].y), sizeof (double), 1 , featureFile);
 		fseek (featureFile, 2 * sizeof (double), SEEK_CUR); // Skip Reading scale and key orientation
 
-		int n1 =  (int)train.features[index].y;//Why Reflection?trainImage->height-1 -
-		int n2 =  (int)train.features[index].x;//Why Reflection?trainImage->width-1 -		
+		int n1 =  (int)train.features[index].y;// + trainImage->height / 2 ;//Why Reflection?trainImage->height-1 -
+		int n2 =  (int)train.features[index].x;// + trainImage->width / 2;//Why Reflection?trainImage->width-1 -		
 		if (trainImage->imageData[n1 * trainImage->width + n2] > 250)
 			trainImage->imageData[n1 * trainImage->width + n2] = 0;
 		else
@@ -67,16 +67,15 @@ void processFrames (double threshold, FILE *RotationDataFile, FILE *logFile) {
 
 
 
-	FEATURES test;
-	IMAGE* JustGrey;
-	GIMAGE *testImage;	
+	FEATURES test;	
+	IMAGE *testImage, *testkeyImage;	
 	COORDS* coordinateMappings;
 	COORDS initial,final;
-	for ( int frameIndex = 1; frameIndex < 100; frameIndex+=1 ) {
-
+	for ( int frameIndex = 2; frameIndex < 100; frameIndex+=1 )
+	{
 		// Extract Sift Features
 		//filename = new char[100];
-		sprintf (filename, "./TestRepo/00.Test_Images/Frames/%d.bmp",frameIndex);
+		sprintf (filename, "./TestRepo/02.Test/00.Frames/%d.bmp",frameIndex);
 		cout << endl << filename << endl;
 		BuildFeature (filename, frameIndex, "./TestRepo/02.Test");
 
@@ -91,13 +90,13 @@ void processFrames (double threshold, FILE *RotationDataFile, FILE *logFile) {
 
 		test.features = new FEATURE [ test.Number_of_Features ];
 
-		sprintf (filename,".\\TestRepo\\00.Test_Images\\Frames\\%d.bmp",frameIndex);
+		sprintf (filename,"./TestRepo/02.Test/00.Frames/%d.bmp",frameIndex);
 		//cout << filename << endl;
-		JustGrey = readGrey(filename);
-		testImage = Gtype (JustGrey);
-		releaseImage (JustGrey);
+		testImage = readGrey(filename);		
+		testkeyImage = cloneImage (testImage);
 
-		for (int featureIndex = 0; featureIndex < test.Number_of_Features; featureIndex ++) {
+		for (int featureIndex = 0; featureIndex < test.Number_of_Features; featureIndex ++)
+		{
 			fread ( &(test.features[featureIndex].x), sizeof (double), 1 , featureFile);
 			fread ( &(test.features[featureIndex].y), sizeof (double), 1 , featureFile);
 			/*double sc;
@@ -106,22 +105,22 @@ void processFrames (double threshold, FILE *RotationDataFile, FILE *logFile) {
 			fseek (featureFile, sizeof (double), SEEK_CUR); // Skip Reading key orientation*/
 			fseek (featureFile, 2 * sizeof (double), SEEK_CUR); // Skip Reading scale and key orientation
 
-			int n1 =  (int)test.features[featureIndex].y;//Why Reflection?testImage->height-1 -
-			int n2 =  (int)test.features[featureIndex].x;//Why Reflection?testImage->width-1 -
-			if (testImage->imageData[n1 * testImage->width + n2] > 0.48)
-				testImage->imageData[n1 * testImage->width + n2] = -0.48;
+			int n1 =  (int)test.features[featureIndex].y;// + testImage->height / 2 ;//Why Reflection?testImage->height-1 -
+			int n2 =  (int)test.features[featureIndex].x;// + testImage->width / 2;//Why Reflection?testImage->width-1 -
+			if (testkeyImage->imageData[n1 * testkeyImage->width + n2] > 250)
+				testkeyImage->imageData[n1 * testkeyImage->width + n2] = 0;
 			else
-				testImage->imageData[n1 * testImage->width + n2] = 0.49;
+				testkeyImage->imageData[n1 * testkeyImage->width + n2] = 255;
 
 			test.features[featureIndex].FeatureVector = new int[test.FeatureVectorLength];
 			fread ( test.features[featureIndex].FeatureVector, sizeof (int), test.FeatureVectorLength , featureFile);
 		}
 		fclose (featureFile);
 
-		sprintf (filename,".\\TestRepo\\02.Test\\KeysinFrame\\keyImage(%d).bmp",frameIndex);
+		sprintf (filename,".\\TestRepo\\02.Test\\09.KeysinFrame\\keyImage(%d).bmp",frameIndex);
 		//cout << filename << endl;
-		writeImage (filename, testImage);
-		releaseImage (testImage);
+		writeImage (filename, testkeyImage);
+		releaseImage (testkeyImage);
 
 		coordinateMappings = findNearestNeighbor (train, test, logFile, threshold);
 		initial = coordinateMappings[0];
@@ -143,12 +142,19 @@ void processFrames (double threshold, FILE *RotationDataFile, FILE *logFile) {
 
 		
 		fprintf (logFile, "\n\tAffineFit:\n");
-		MATRIX affine = fitAffineMatrix ( initial, final );
+		MATRIX affine = fitAffineMatrix ( initial, final, 256, 256 );
 		affine.print(logFile);
 		fprintf (logFile, "\n");
 
-		fprintf (logFile,"\tFrame: %2d  Actual: %6.3lf  ", frameIndex,2*3.14*(double)frameIndex/(double)100);
-		showMotion (affine,  logFile, RotationDataFile);
+		fprintf (logFile,"\tFrame: %2d  Actual: %6.3lf   Translation: ( x: %8.3lf , y: %8.3lf )\n", frameIndex,2*3.14*(double)frameIndex/(double)100,0.0,0.0);
+		MATRIX *roTrans = showMotion (affine, RotationDataFile, logFile);
+
+		
+		IMAGE *boxed = render_selection (selection_box, roTrans, testImage);
+		releaseImage (testImage);
+		sprintf (filename,"./TestRepo/02.Test/10.Result/%d.bmp",frameIndex);
+		writeImage (filename,boxed);
+		releaseImage (boxed);
 
 		// Garbage Collection: Test Feature		
 		for (int featureIndex = 0; featureIndex < test.Number_of_Features; featureIndex ++)

@@ -75,7 +75,11 @@ void nonRightTriangle (int *x, int *y, IMAGE *tempImage, double *color_contrast,
 
 		//cout << slope_1 << " , " << slope_2 << endl;
 
-		for (int row = sorted_x[0]; row <= sorted_x[1]; row++ )
+		int row_start = (sorted_x[0] < 0) ? 0 : sorted_x[0];
+		int row_end = (sorted_x[1] >= tempImage->height) ? tempImage->height - 1 : sorted_x[1];
+
+
+		for (int row = row_start; row <= row_end; row++ )
 		{
 			int inter_col_1 = sorted_y[0] + slope_1 * (row - sorted_x[0]);
 			int inter_col_2 = sorted_y[0] + slope_2 * (row - sorted_x[0]);
@@ -87,6 +91,10 @@ void nonRightTriangle (int *x, int *y, IMAGE *tempImage, double *color_contrast,
 				inter_col_2 = temp;
 			}
 			
+			inter_col_1 = (inter_col_1 < 0) ? 0 : inter_col_1;
+			inter_col_2 = (inter_col_2 < 0) ? 0 : inter_col_2;
+			inter_col_1 = (inter_col_1 >= tempImage->width) ? tempImage->width - 1 : inter_col_1;
+			inter_col_2 = (inter_col_2 >= tempImage->width) ? tempImage->width - 1 : inter_col_2;
 			
 			for (int col = inter_col_1; col <= inter_col_2; col++)
 			{
@@ -110,7 +118,10 @@ void nonRightTriangle (int *x, int *y, IMAGE *tempImage, double *color_contrast,
 
 		//cout << slope_1 << " , " << slope_2 << endl;
 
-		for (int row = sorted_x[2]; row >= sorted_x[1]; row-- )
+		int row_start = (sorted_x[2] >= tempImage->height) ? tempImage->height - 1 : sorted_x[2];
+		int row_end = (sorted_x[1] < 0) ? 0 : sorted_x[1];
+
+		for (int row = row_start; row >= row_end; row-- )
 		{
 			int inter_col_1 = sorted_y[2] + slope_1 * (row - sorted_x[2]);
 			int inter_col_2 = sorted_y[2] + slope_2 * (row - sorted_x[2]);
@@ -122,6 +133,10 @@ void nonRightTriangle (int *x, int *y, IMAGE *tempImage, double *color_contrast,
 				inter_col_2 = temp;
 			}
 			
+			inter_col_1 = (inter_col_1 < 0) ? 0 : inter_col_1;
+			inter_col_2 = (inter_col_2 < 0) ? 0 : inter_col_2;
+			inter_col_1 = (inter_col_1 >= tempImage->width) ? tempImage->width - 1 : inter_col_1;
+			inter_col_2 = (inter_col_2 >= tempImage->width) ? tempImage->width - 1 : inter_col_2;
 			
 			for (int col = inter_col_1; col <= inter_col_2; col++)
 			{
@@ -227,8 +242,12 @@ void rightTriangle (int *x, int *y, IMAGE *tempImage, double *color_contrast, in
 	}
 
 	int temp_pixel;
+	
 
-	for (int row = init_x; row <= final_x; row++ )
+	int row_start = (init_x < 0) ? 0 : init_x;
+	int row_end = (final_x >= tempImage->height) ? tempImage->height - 1 : final_x;
+
+	for (int row = row_start; row <= row_end; row++ )
 	{
 		int inter_col_1 = other_y;
 		int inter_col_2 = init_y + slope * (row - init_x);		
@@ -239,8 +258,12 @@ void rightTriangle (int *x, int *y, IMAGE *tempImage, double *color_contrast, in
 			inter_col_2 = inter_col_1;
 			inter_col_1	= temp;
 		}
-		
-		
+
+		inter_col_1 = (inter_col_1 < 0) ? 0 : inter_col_1;
+		inter_col_2 = (inter_col_2 < 0) ? 0 : inter_col_2;
+		inter_col_1 = (inter_col_1 >= tempImage->width) ? tempImage->width - 1 : inter_col_1;
+		inter_col_2 = (inter_col_2 >= tempImage->width) ? tempImage->width - 1 : inter_col_2;
+
 		for (int col = inter_col_1; col <= inter_col_2; col++)
 		{
 			for (int colorIndex = 0; colorIndex < tempImage->numColors; colorIndex++)
