@@ -12,6 +12,9 @@
 #include <iostream>
 using namespace std;
 
+extern int TrainObject_x;
+extern int TrainObject_y;
+
 void processFrames (MATRIX *selection_box, double threshold, FILE *RotationDataFile, FILE *logFile)
 {
 	char *filename = new char[100];
@@ -142,7 +145,7 @@ void processFrames (MATRIX *selection_box, double threshold, FILE *RotationDataF
 
 		
 		fprintf (logFile, "\n\tAffineFit:\n");
-		MATRIX affine = fitAffineMatrix ( initial, final, 256, 256 );
+		MATRIX affine = fitAffineMatrix ( initial, final, TrainObject_x, TrainObject_y );
 		affine.print(logFile);
 		fprintf (logFile, "\n");
 
