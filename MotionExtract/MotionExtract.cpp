@@ -3,8 +3,8 @@
 
 #include <MotionExtract/MotionExtract.h>
 
-void showMotion (MATRIX AffineMatrix, FILE *output) {
-	
+MATRIX* showMotion (MATRIX AffineMatrix, FILE *output, FILE *logFile) 
+{	
 	MATRIX_CONTENT_TYPE** AffineMatrixData = AffineMatrix.getDataPtr();
 	
 	double rawCosX = (AffineMatrixData[0][0]+AffineMatrixData[1][1]);
@@ -14,18 +14,21 @@ void showMotion (MATRIX AffineMatrix, FILE *output) {
 	double cosX = rawCosX / Normalizer;
 	double sinX = rawSinX / Normalizer;
 
-	double theta = atan2 (sinX,cosX);
+	double theta = atan2 ( sinX, cosX );//acos (cosX) //asin (sinX),
 
-	// Fix rotation making use of cosX and sinX and not tanX;
-
-	double bx = AffineMatrixData[2][0] + (cosX*256 + sinX*256);
-	double by = AffineMatrixData[2][1] - (-sinX*256 + cosX*256);
-
-	//printf ("Rotation: %6.3lf = %6.3lf Translation: ( x: %8.3lf , y: %8.3lf )\n", theta, 6.28-theta, bx, by);//atan (sinX/cosX)//asin (sinX)
-	printf ("Rotation: %6.3lf = %6.3lf = %6.3lf = %6.3lf \n", acos (cosX), asin (sinX), theta, 6.28+theta );
-	//printf ("( x: %8.3lf , y: %8.3lf ) : ( x: %8.3lf , y: %8.3lf )\n", AffineMatrixData[2][0], AffineMatrixData[2][1], bx, by);//atan (sinX/cosX)//asin (sinX)
-
-	if (output) 
+	//fprintf (logFile,"\t\tEstimated: %6.3lf\n\n", theta);
+	fprintf (logFile,"\t\tEstimated: %6.3lf   Translation: ( x: %8.3lf , y: %8.3lf )\n\n", theta, AffineMatrixData[2][0], AffineMatrixData[2][1]);
+	
+	if (output) {
 		fwrite (&theta, sizeof (double), 1, output);
+		fflush (output);
+	}
 
+	MATRIX *roTrans = new MATRIX (3,2);
+	MATRIX_CONTENT_TYPE **rotData = roTrans->getDataPtr ();
+
+	rotData[0][0] = cosX;	rotData[1][0] = -sinX;	rotData[2][0] = AffineMatrixData[2][0];
+	rotData[0][1] = sinX;	rotData[1][1] = cosX;	rotData[2][1] = AffineMatrixData[2][1];
+
+	return roTrans;
 }

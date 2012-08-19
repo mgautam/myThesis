@@ -1,6 +1,8 @@
 #ifndef FRAMES_H
 #define FRAMES_H
 
-void createFrames (char *fileName, char *FramesFolder, int numFrames, char *backgroundFile = 0);
+#include <stdio.h>
+
+void createFrames (char *fileName, char *FramesFolder, int numFrames, FILE *logFile = stdout, bool color_frames = true, char *backgroundFile = 0);
 
 #endif

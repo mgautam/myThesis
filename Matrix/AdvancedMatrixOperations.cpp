@@ -1,7 +1,7 @@
 #include <stdlib.h>
-#include <math.h>
 
 #include <Matrix/amatrix.h>
+#include <math.h>
 static double dotproduct (double *vector1, double *vector2, int size);
 static double L2Norm (double *vector, int size);
 static void invMult (MATRIX *upperTriangular, double* vector);
@@ -69,8 +69,8 @@ void AMATRIX::decomposeQR (void) {
 
 	}
 
-	//cout << "Q Matrix is" << endl << *Q_ptr << endl;
-	//cout << "R Matrix is" << endl << *R_ptr << endl;
+	//fprintf (logFile, "Q Matrix is\n"); (*Q_ptr).print(logFile); fprintf(logFile,"\n");
+	//fprintf (logFile, "R Matrix is\n"); (*R_ptr).print(logFile); fprintf(logFile,"\n");	
 
 	decomposed = true;
 }
@@ -80,7 +80,7 @@ void invMult (MATRIX *upperTriangular, double* vector) {
 	int matHeight = upperTriangular->getHeight ();
 	MATRIX_CONTENT_TYPE **content = upperTriangular->getDataPtr ();
 
-	//cout << "Inverse..." << endl;
+	//fprintf (logFile, "Inverse...\n");
 	if (matWidth == matHeight) {
 		for (int col = matWidth-1; col >= 0; col--) {
 			vector[col] /= content[col][col];
@@ -89,10 +89,10 @@ void invMult (MATRIX *upperTriangular, double* vector) {
 		}
 	}
 	else {
-		cout << "Not a Square - Triangular Matrix!" << endl;
+		fprintf (stderr, "Not a Square - Triangular Matrix!\n");
 		exit (-1);
 	}
-	//cout << "ends" << endl;	
+	//fprintf (logFile, "ends\n");
 }
 
 double* AMATRIX::invert (double *vector) {

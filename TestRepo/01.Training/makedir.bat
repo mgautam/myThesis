@@ -1,2 +1,2 @@
-mkdir "07.SIFT_Keys"
+mkdir "07.Feature_Keys"
 pause

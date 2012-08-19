@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <math.h>
 
 #include <Matrix/amatrix.h>
 
@@ -119,7 +120,7 @@ AMATRIX AMATRIX::operator- (AMATRIX OtherMatrix) {
 AMATRIX AMATRIX::operator* (AMATRIX OtherMatrix) {
 	int ownWidth = this->getWidth ();	
 	if ( ownWidth != OtherMatrix.getHeight ()) {
-		cout << "Error: Matrix Dimensions Don't Match" << endl;
+		fprintf (stderr,"Error: Matrix Dimensions Don't Match\n");
 		exit(-1) ;
 	}
 	int height = this->getHeight ();

@@ -3,6 +3,6 @@
 
 void testFrames (void) {
 	
-	createFrames (".\\TestRepo\\00.Test_Images\\earth.bmp", ".\\TestRepo\\00.Test_Images\\Frames", 100);//,".\\TestRepo\\00.Test_Images\\space.bmp");
+	createFrames ("./TestRepo/00.Test_Images/lena.bmp", "./TestRepo/00.Test_Images/Frames", 100);
 
-}
+}	

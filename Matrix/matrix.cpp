@@ -1,5 +1,4 @@
 #include <stdlib.h>
-
 #include <Matrix/matrix.h>
 
 //Constructors
@@ -53,7 +52,15 @@ ostream& operator<< (ostream& outStream, const MATRIX matrix) {
     return outStream;
 }
 
-
+void MATRIX::print (FILE *logFile)
+{
+	for ( int row = 0; row < this->height; row++) {
+		fprintf (logFile,"\t");
+		for ( int col = 0; col < this->width; col++)		
+			fprintf (logFile, "%lf   ", this->data[col][row]) ;
+		fprintf (logFile,"\n");
+	}    
+}
 
 
 // Controllers
@@ -111,7 +118,7 @@ MATRIX MATRIX::operator- (MATRIX OtherMatrix) {
 
 MATRIX MATRIX::operator* (MATRIX OtherMatrix) {
 	if ( this->width != OtherMatrix.height) {
-		cout << "Error: Matrix Dimensions Don't Match" << endl;
+		fprintf (stderr, "Error: Matrix Dimensions Don't Match\n");
 		exit(-1) ;
 	}
 
@@ -150,7 +157,7 @@ MATRIX transpose (const MATRIX matrix) {
 
 // Destructor
 MATRIX::~MATRIX (void) {
-	/*cout << this->width << endl;
+	/*fprintf (logFile, "%d\n",this->width);
 	if (this->data != NULL) {
 		for (int col = 0; col < this->width; col++)
 			delete this->data[col];

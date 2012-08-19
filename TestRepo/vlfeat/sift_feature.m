@@ -7,11 +7,11 @@ run 'vlfeat-0.9.14\toolbox\vl_setup.m';
 %SIFT descriptors are often used find similar regions in two images.
 % vl_ubcmatch implements a basic matching algorithm.
 % Let Ia and Ib be images of the same object or scene. We extract and match the descriptors by:
-Ia = single(rgb2gray(imread('..\00.Test_Images\earth.bmp')));
+Ia = single(rgb2gray(imread('..\\01.Training\\train.bmp')));
 [fa, da] = vl_sift (Ia) ;
 siz=size(da);
 
-featureFile = fopen ('..\..\TestRepo\01.Training\07.SIFT_Keys\train.bin','w');
+featureFile = fopen ('..\\..\\TestRepo\\01.Training\\07.Feature_Keys\\train.bin','w');
 fwrite (featureFile,siz,'uint32');
 
 for i = 1:siz(2)
@@ -24,12 +24,12 @@ fclose (featureFile);
 
 for i = 0:99
     
-    filename = sprintf('..\\..\\TestRepo\\00.Test_Images\\Frames\\%d.bmp',i);
-    Ib = single(imread(filename));
+    filename = sprintf('..\\..\\TestRepo\\02.Test\\00.Frames\\%d.bmp',i);
+    Ib = single(rgb2gray(imread(filename)));
     [fb, db] = vl_sift (Ib) ;
     siz=size(db);
     
-    filename = sprintf('..\\..\\TestRepo\\02.Test\\07.SIFT_Keys\\testFeature(%d).bin',i);
+    filename = sprintf('..\\..\\TestRepo\\02.Test\\07.Feature_Keys\\testFeature(%d).bin',i);
     featureFile = fopen (filename,'w');
     fwrite (featureFile,siz,'uint32');
 
@@ -45,7 +45,7 @@ for i = 0:99
 end;
 
 
-featureFile = fopen ('..\..\TestRepo\01.Training\07.SIFT_Keys\train.bin','r');
+featureFile = fopen ('..\..\TestRepo\01.Training\07.Feature_Keys\train.bin','r');
 fread (featureFile,2,'uint32')
 fread (featureFile,2,'double')
 fread (featureFile,128,'uint8')
