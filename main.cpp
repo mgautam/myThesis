@@ -22,6 +22,11 @@ using namespace std;
 
 #include <stdlib.h>
 
+extern int TrainObject_x;
+int TrainObject_x = 256;
+extern int TrainObject_y;
+int TrainObject_y = 256;
+
 int main (int argc, char **argv)
 {
 	//Create Rotation & Translation of smaller objects in a larger image
@@ -51,8 +56,8 @@ int main (int argc, char **argv)
 	double **dataptr = selection_box->getDataPtr();
 	for (int col = 0; col < selection_box->getWidth(); col++)
 	{
-		dataptr[col][0] = x[col];
-		dataptr[col][1] = y[col];
+		dataptr[col][0] = x[col] - TrainObject_x;
+		dataptr[col][1] = y[col] - TrainObject_y;
 		dataptr[col][2] = 1;
 	}
 

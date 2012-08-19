@@ -5,6 +5,9 @@
 #include <iostream>
 using namespace std;
 
+extern int TrainObject_x;
+extern int TrainObject_y;
+
 IMAGE* render_selection (MATRIX *selection_box, MATRIX *AffineModel, IMAGE *inImage, double *color_contrast, int *color_brightness)
 {
 	int num_vertices = selection_box->getWidth();
@@ -20,8 +23,8 @@ IMAGE* render_selection (MATRIX *selection_box, MATRIX *AffineModel, IMAGE *inIm
 	int *x = new int[num_vertices], *y = new int[num_vertices];
 	for (int col = 0; col < num_vertices; col++)
 	{
-		x[col] = TransformedData[col][0] - inImage->width / 2;
-		y[col] = TransformedData[col][1] - inImage->height / 2;			
+		x[col] = TransformedData[col][0] + TrainObject_x;
+		y[col] = TransformedData[col][1] + TrainObject_y;
 	}
 	
 	IMAGE* outImage = drawPolygon (num_vertices,x,y,inImage, color_contrast, color_brightness);
