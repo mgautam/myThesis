@@ -6,7 +6,7 @@
 
 #include <Matrix/matrix.h>
 
-#include <AffineTransformer/blocks.h>
+#include <AffineTransformer/bounding_boxes.h>
 
 #include <stdlib.h>
 #include <math.h>

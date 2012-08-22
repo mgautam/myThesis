@@ -6,7 +6,7 @@ COORDS* findNearestNeighbor (FEATURES TrainFeature,FEATURES TestFeature, FILE *l
 {
 	fprintf (logFile, "\n\tFinding Nearest Neighbor...\n");
 	int FeatureVectorLength = TrainFeature.FeatureVectorLength; // == TestFeature.FeatureVectorLength
-	int numTrainFeatures = TrainFeature.Number_of_Features;
+	int numTrainFeatures = TrainFeature.Number_of_Features;//TestFeature.Number_of_Features;
 	int numTestFeatures = TestFeature.Number_of_Features;
 
 	COORDS *coordinates = new COORDS[2];

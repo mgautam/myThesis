@@ -163,7 +163,10 @@ int featureCalc(GIMAGE *GaussPix, IMAGE *ExPix, int octave, int blur, char *Proj
 	GTYPE threshold = maxMag/10.0;	
 	for(int n1 = 0; n1 < ExPix->height-1; n1++)
 		for(int n2 = 0; n2 < ExPix->width-1; n2++)
-			if(ExPix->imageData[n1*ExPix->width+n2] == MAX_PIXEL_VALUE && Magnitudes[n1*ExPix->width+n2] > threshold )
+			if(
+				ExPix->imageData[n1*ExPix->width+n2] == MAX_PIXEL_VALUE 
+				&& Magnitudes[n1*ExPix->width+n2] > threshold 
+				)
 				numKeys++;
 
 	
@@ -181,7 +184,9 @@ int featureCalc(GIMAGE *GaussPix, IMAGE *ExPix, int octave, int blur, char *Proj
 		for(int n2 = 0; n2 < (ExPix->width)-1; n2++) 
 		{
 			
-			if(ExPix->imageData[n1*ExPix->width+n2] == MAX_PIXEL_VALUE ) 
+			if(ExPix->imageData[n1*ExPix->width+n2] == MAX_PIXEL_VALUE  
+				&& Magnitudes[n1*ExPix->width+n2] > threshold 
+				) 
 			{
 				for(int i = 0; i < NUMBER_OF_ORIENTATION_BINS_I; i++) 
 						oriBins[i] = 0;
@@ -215,7 +220,6 @@ int featureCalc(GIMAGE *GaussPix, IMAGE *ExPix, int octave, int blur, char *Proj
 					for(int i=0; i < NUMBER_OF_ORIENTATION_BINS_I; i++) 
 						if(oriBins[i] > PEAK_THRESHOLD * maxBin)
 						{
-							//AngleDescriptor[keyIndex+numMax].KeyOrientation = (((double) i) / NUMBER_OF_ORIENTATION_BINS_I - 0.5)*(2*pi);
 							AngleDescriptor[keyIndex+numMax].KeyOrientation = (((double) i) / NUMBER_OF_ORIENTATION_BINS_I)*(2*pi);
 							numMax++;						
 						}
@@ -225,7 +229,7 @@ int featureCalc(GIMAGE *GaussPix, IMAGE *ExPix, int octave, int blur, char *Proj
 				{
 					AngleDescriptor[keyIndex].y = (double)n1 * pow(2.0,octave-1);//before without pow
 					AngleDescriptor[keyIndex].x = (double)n2 * pow(2.0,octave-1);//before without pow
-					AngleDescriptor[keyIndex].scale = 0.121212;//1.0 / pow(2.0,octave);//Magnif;
+					AngleDescriptor[keyIndex].scale = 1.0 / pow(2.0,octave);//Magnif;//0.121212;//
 					
 					// Check whether I have to change the offset to KeyOrientation as -pi/2 < atanX < pi/2
 					sectorOffset = (int) ((AngleDescriptor[keyIndex].KeyOrientation)* number_of_sectors / (2.0*pi));
@@ -246,7 +250,7 @@ int featureCalc(GIMAGE *GaussPix, IMAGE *ExPix, int octave, int blur, char *Proj
 											+= ExPix->imageData[(n1+k1)*ExPix->width+(n2+k2)] 
 												* sectorWindow[(sectorIndex + sectorOffset) % number_of_sectors][k1+window_radius][k2+window_radius];
 									}
-						AngleDescriptor[keyIndex].sectorCount[sectorIndex] /= MAX_PIXEL_VALUE;						
+						//AngleDescriptor[keyIndex].sectorCount[sectorIndex] /= MAX_PIXEL_VALUE;						
 						totalNeighbors += AngleDescriptor[keyIndex].sectorCount[sectorIndex];
 
 						// Polynomial Separation
@@ -258,7 +262,7 @@ int featureCalc(GIMAGE *GaussPix, IMAGE *ExPix, int octave, int blur, char *Proj
 							AngleDescriptor[keyIndex].sectorCount[i] = tempPtr[i];
 						delete tempPtr;
 */					}				
-					if (totalNeighbors > 10) 
+					if (totalNeighbors > 10*MAX_PIXEL_VALUE) 
 					{
 						//cout << totalNeighbors << "\t";
 						keyIndex++;

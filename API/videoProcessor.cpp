@@ -6,7 +6,7 @@
 #include <ModelAffine/coordinates.h>
 #include <ModelAffine/fitAffineMatrix.h>
 #include <MotionExtract/MotionExtract.h>
-#include <AffineTransformer/blocks.h>
+#include <AffineTransformer/bounding_boxes.h>
 
 #include <string.h>
 #include <iostream>
@@ -74,7 +74,7 @@ void processFrames (MATRIX *selection_box, double threshold, FILE *RotationDataF
 	IMAGE *testImage, *testkeyImage;	
 	COORDS* coordinateMappings;
 	COORDS initial,final;
-	for ( int frameIndex = 2; frameIndex < 100; frameIndex+=1 )
+	for ( int frameIndex = 4; frameIndex < 100; frameIndex+=1 )
 	{
 		// Extract Sift Features
 		//filename = new char[100];
@@ -94,10 +94,7 @@ void processFrames (MATRIX *selection_box, double threshold, FILE *RotationDataF
 		test.features = new FEATURE [ test.Number_of_Features ];
 
 		sprintf (filename,"./TestRepo/02.Test/00.Frames/%d.bmp",frameIndex);
-		//cout << filename << endl;
-		testImage = readGrey(filename);		
-		testkeyImage = cloneImage (testImage);
-
+		testkeyImage = readGrey(filename);
 		for (int featureIndex = 0; featureIndex < test.Number_of_Features; featureIndex ++)
 		{
 			fread ( &(test.features[featureIndex].x), sizeof (double), 1 , featureFile);
@@ -120,7 +117,7 @@ void processFrames (MATRIX *selection_box, double threshold, FILE *RotationDataF
 		}
 		fclose (featureFile);
 
-		sprintf (filename,".\\TestRepo\\02.Test\\09.KeysinFrame\\keyImage(%d).bmp",frameIndex);
+		sprintf (filename,"./TestRepo/02.Test/09.KeysinFrame/keyImage(%d).bmp",frameIndex);
 		//cout << filename << endl;
 		writeImage (filename, testkeyImage);
 		releaseImage (testkeyImage);
@@ -152,7 +149,10 @@ void processFrames (MATRIX *selection_box, double threshold, FILE *RotationDataF
 		fprintf (logFile,"\tFrame: %2d  Actual: %6.3lf   Translation: ( x: %8.3lf , y: %8.3lf )\n", frameIndex,2*3.14*(double)frameIndex/(double)100,0.0,0.0);
 		MATRIX *roTrans = showMotion (affine, RotationDataFile, logFile);
 
-		
+
+		sprintf (filename,"./TestRepo/02.Test/00.Frames/%d.bmp",frameIndex);
+		testImage = readRGB (filename);
+		double color_contrast[3] = {0,1,1};
 		IMAGE *boxed = render_selection (selection_box, roTrans, testImage);
 		releaseImage (testImage);
 		sprintf (filename,"./TestRepo/02.Test/10.Result/%d.bmp",frameIndex);

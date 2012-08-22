@@ -18,9 +18,9 @@ MATRIX fitAffineMatrix ( COORDS initialPosition, COORDS finalPosition, double in
 		initialData[1][row] = initialPosition.y[row] - init_object_y;
 		initialData[2][row] = 1;
 
-		initialData[0][row] /= (initialPosition.scores[row]+SMALL_NOISE); // Weighting for Weighted Least Squares
-		initialData[1][row] /= (initialPosition.scores[row]+SMALL_NOISE); // Weighting for Weighted Least Squares
-		initialData[2][row] /= (initialPosition.scores[row]+SMALL_NOISE); // Weighting for Weighted Least Squares
+//		initialData[0][row] /= (initialPosition.scores[row]+SMALL_NOISE); // Weighting for Weighted Least Squares
+//		initialData[1][row] /= (initialPosition.scores[row]+SMALL_NOISE); // Weighting for Weighted Least Squares
+//		initialData[2][row] /= (initialPosition.scores[row]+SMALL_NOISE); // Weighting for Weighted Least Squares
 	}
 
 	MATRIX TransposedInitMat = transpose (initialMatrix);
@@ -32,8 +32,8 @@ MATRIX fitAffineMatrix ( COORDS initialPosition, COORDS finalPosition, double in
 		finalPosition.x[row] -= init_object_x;
 		finalPosition.y[row] -= init_object_y;
 
-		finalPosition.x[row] /= (finalPosition.scores[row]+SMALL_NOISE);// Weighting for Weighted Least Squares
-		finalPosition.y[row] /= (finalPosition.scores[row]+SMALL_NOISE);// Weighting for Weighted Least Squares
+//		finalPosition.x[row] /= (finalPosition.scores[row]+SMALL_NOISE);// Weighting for Weighted Least Squares
+//		finalPosition.y[row] /= (finalPosition.scores[row]+SMALL_NOISE);// Weighting for Weighted Least Squares
 	}
 
 	

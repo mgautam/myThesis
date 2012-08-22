@@ -38,7 +38,8 @@ using namespace std;
 	}
 	
 	GIMAGE *tmpImage;
-	for(int i=0; i < numLayers-1; i++) {	
+	for(int i=0; i < numLayers-1; i++)
+	{	
 		fprintf (logFile, "\t   Level %d / %d\n", i+2, numLayers);
 
 		tmpImage = createImage(Pyramid[i]->width, Pyramid[i]->height,1);
@@ -51,7 +52,8 @@ using namespace std;
 		resample(tmpImage,2,3,Pyramid[i+1]);
 		releaseImage(tmpImage);
 
-		if(PROJECT_FOLDER != NULL) {
+		if(PROJECT_FOLDER != NULL)
+		{
 			sprintf(filename,"%s/01.Gaussian_Pyramid/Image_Gauss(%d).bmp",PROJECT_FOLDER,i+2);
 			writeImage(filename,Pyramid[i+1]);
 		}		
@@ -84,25 +86,29 @@ GIMAGE**** LaplacianPyramid(GIMAGE *inImage, GTYPE sigma, int octaves, int numBl
 		
 	char *filename = new char[100];	
 	GIMAGE* tmpImage = cloneImage(inImage);
-	for(int i=0; i < octaves; i++) {
+	for(int i=0; i < octaves; i++)
+	{
 		//cout << "\t   Octave " << i+1 << "/" << octaves << "\t Blur " << 1 << "/" << numBlurs << endl;
 		fprintf (logFile, "\t%lf ", sigma*pow(2.0,(GTYPE)i));
 		Pyramid[0][i][0] = createImage( tmpImage->width, tmpImage->height, 1 );
 		GaussianFilter(0, sigma, filter_start, filter_length, filter_coefficients);
 		imFilter(tmpImage, filter_coefficients, filter_start, filter_length, Pyramid[0][i][0]);
-		if(PROJECT_FOLDER != NULL){
+		if(PROJECT_FOLDER != NULL)
+		{
 			sprintf(filename,"%s/01.Gaussian_Pyramid/Image_Gauss(%d%d).bmp",PROJECT_FOLDER,i,0);
 			writeImageNorm(filename,Pyramid[0][i][0]);
 		}
 
-		for(int j=0; j < numBlurs-1; j++) {	
+		for(int j=0; j < numBlurs-1; j++)
+		{	
 			//cout << "\t   Octave " << i+1 << "/" << octaves << "\t Blur " << j+2 << "/" << numBlurs << endl;
 			fprintf (logFile, "%7.4lf ", sigma*pow(2.0,(GTYPE)i+(j+1)/(GTYPE)(numBlurs-3)) );
 
 			Pyramid[0][i][j+1] = createImage( tmpImage->width, tmpImage->height, 1 );			
 			GaussianFilter(0, sigma*pow(2.0,(GTYPE)(j+1)/(GTYPE)(numBlurs-3)), filter_start, filter_length, filter_coefficients);
 			imFilter(tmpImage, filter_coefficients, filter_start, filter_length, Pyramid[0][i][j+1]);
-			if(PROJECT_FOLDER != NULL){
+			if(PROJECT_FOLDER != NULL)
+			{
 				sprintf(filename,"%s/01.Gaussian_Pyramid/Image_Gauss(%d%d).bmp",PROJECT_FOLDER,i,j+1);
 				writeImageNorm(filename,Pyramid[0][i][j+1]);
 			}
@@ -111,7 +117,8 @@ GIMAGE**** LaplacianPyramid(GIMAGE *inImage, GTYPE sigma, int octaves, int numBl
 			for(int n1=0; n1 < tmpImage->height; n1++)
 				for(int n2=0; n2 < tmpImage->width; n2++)
 					Pyramid[1][i][j]->imageData[n1*tmpImage->width+n2] = Pyramid[0][i][j]->imageData[n1*Pyramid[0][i][j]->width+n2] - Pyramid[0][i][j+1]->imageData[n1*Pyramid[0][i][j+1]->width+n2];			
-			if(PROJECT_FOLDER != NULL){
+			if(PROJECT_FOLDER != NULL)
+			{
 				sprintf(filename,"%s/02.Laplacian_Pyramid/Image_Lapla(%d%d).bmp",PROJECT_FOLDER,i,j);
 				writeImageNorm(filename,Pyramid[1][i][j]);
 			}
