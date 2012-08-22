@@ -29,9 +29,8 @@ void downScale(GIMAGE *inImage, int scale, GIMAGE *downScaled) {
 			downScaled->imageData[row*downScaled->width+col] = inImage->imageData[scale*row*inImage->width+scale*col];
 }
 
-void resample(GIMAGE *inImage, int expandMag, int compressMag, GIMAGE *outImage) {
-	//cout << expandMag << " " << compressMag <<  endl;
-
+void resample(GIMAGE *inImage, int expandMag, int compressMag, GIMAGE *outImage) 
+{	
 	int outHeight, outWidth;
 
 	outHeight = inImage->height * expandMag;
@@ -46,6 +45,7 @@ void resample(GIMAGE *inImage, int expandMag, int compressMag, GIMAGE *outImage)
 	if(expandMag > compressMag) SincFilter(expandMag, filter_start, filter_length, 1, filter_coefficients);
 	else SincFilter(compressMag, filter_start, filter_length, 1, filter_coefficients);
 	imFilter(upScaled, filter_coefficients, filter_start, filter_length, upScaled);
+	delete filter_coefficients;
 	//writeImage("C:/Users/Gautam/Desktop/upScaledFiltered.bmp", upScaled);
 
 	outHeight = upScaled->height / compressMag;

@@ -1,5 +1,7 @@
 #include <Matrix/matrix.h>
 #include <bmpAccess/bmpEngine.h>
+#include <DSP/filter.h>
+#include <DSP/noise.h>
 #include <AffineTransformer/frames.h>
 
 #include <stdio.h>
@@ -8,8 +10,11 @@
 #include <string.h>
 
 #define SCALE 1
+// NOISE_AMP must be between 0(=128) to 1/2 (=255)
+#define NOISE_AMP 0.1
+#define NOISE_LENGTH 100.0
 
-void createFrames (char *fileName, char *FramesFolder, int numFrames, FILE *logFile, bool color_frames, char *backgroundFile) {
+void createFrames (char *fileName, char *FramesFolder, int numFrames, bool addNoise, FILE *logFile, bool color_frames, char *backgroundFile) {
 	double translation [2] = {0.0,0.0};//{-output->width/2,-output->height/2};
 
 	IMAGE* input;
@@ -33,6 +38,11 @@ void createFrames (char *fileName, char *FramesFolder, int numFrames, FILE *logF
 	double rowIn,colIn;
 	double temp_rowIn, temp_colIn;
 	char filename[100];
+	
+	double *pdf = new double [NOISE_LENGTH];
+	GaussianFilter (NOISE_LENGTH/2, (double)NOISE_LENGTH/3.0, 0, NOISE_LENGTH, pdf); // Gaussian white noise
+	double *inv_cdf = inverse_cdf (-NOISE_AMP, NOISE_AMP, NOISE_LENGTH, pdf);
+	
 	for (int iter = 0; iter < numFrames; iter++) 
 	{	
 		output =  cloneImage (background);
@@ -57,11 +67,14 @@ void createFrames (char *fileName, char *FramesFolder, int numFrames, FILE *logF
 						for (int colorIndex = 0; colorIndex < input->numColors; colorIndex++)
 						{
 							calculated_pixel = input->imageData[(((int)rowIn+input->height/2)*input->width+((int)colIn+input->width/2))*input->numColors+colorIndex];
-							if ( calculated_pixel != 255 ) // Transparency instead of white
+							if ( calculated_pixel != 0 ) // Transparency instead of white
 								output->imageData[((rowOut+output->height/2)*output->width+colOut+output->width/2)*output->numColors+colorIndex] = calculated_pixel;
 						}
 					}				
 			}
+
+		if (addNoise)
+			addWhiteNoise (output, NOISE_LENGTH, inv_cdf, output);
 
 		sprintf (filename,"%s/%d.bmp",FramesFolder,iter);
 		fprintf (logFile, "%s\n", filename);

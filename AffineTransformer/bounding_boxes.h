@@ -1,5 +1,5 @@
-#ifndef BLOCKS_H
-#define BLOCKS_H
+#ifndef BOUNDING_BOXES_H
+#define BOUNDING_BOXES_H
 
 #include <Matrix/matrix.h>
 

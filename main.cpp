@@ -3,14 +3,14 @@
 #include <CriticalPoints/testCriticalPoints.h>
 #include <Matrix/testMatrix.h>
 #include <AffineTransformer/testFrames.h>
-#include <AffineTransformer/testBlocks.h>
+#include <AffineTransformer/testBoxes.h>
 #include <ModelAffine/testAffineFit.h>
 #include <MotionExtract/testMotionExtract.h>
 #include <Features/testMatchFeatures.h>
 
 #include <bmpAccess/bmpEngine.h>
 #include <AffineTransformer/frames.h>
-#include <AffineTransformer/blocks.h>
+#include <AffineTransformer/bounding_boxes.h>
 #include <API/videoProcessor.h>
 #include <ModelAffine/coordinates.h>
 #include <ModelAffine/fitAffineMatrix.h>
@@ -35,18 +35,18 @@ int main (int argc, char **argv) {
 	//testMotionExtract ();
 	//testMatchFeatures ();
 
-	int x[4] = {0,0,512,512};//{156,356,356,156};
-	int y[4] = {0,512,0,512};//{156,156,356,356};
+	int x[4] = {128,128,384,384};//{500,500,625,625};//{0,0,512,512};//
+	int y[4] = {128,384,128,384};//{218,343,218,343};//{0,512,0,512};//
 
-/*
-	IMAGE *inImage = readRGB ("./TestRepo/00.Test_Images/lena.bmp");
+
+	IMAGE *inImage = readRGB ("./TestRepo/00.Test_Images/earth.bmp");
 	IMAGE *train = extract_selection ( 4, x, y, inImage);
 	writeImage ("./TestRepo/01.Training/train.bmp", train);
 	releaseImage (inImage);
 	releaseImage (train);
 
-	createFrames ("./TestRepo/00.Test_Images/lena.bmp", "./TestRepo/02.Test/00.Frames", 100);//,"./TestRepo/00.Test_Images/lena.bmp");
-*/
+	createFrames ("./TestRepo/00.Test_Images/earth.bmp", "./TestRepo/02.Test/00.Frames", 100, false, stdout, true,"./TestRepo/00.Test_Images/space.bmp");
+
 	
 	MATRIX *selection_box = new MATRIX (4,3);
 	double **dataptr = selection_box->getDataPtr();
