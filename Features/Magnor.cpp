@@ -61,8 +61,12 @@ int featureCalc(GIMAGE *GaussPix, IMAGE *ExPix, int octave, int blur, char *Proj
 			Magnitudes[n1*GaussPix->width+n2] = 
 				sqrt(pow(GTYPE(GaussPix->imageData[n1*GaussPix->width+n2]-GaussPix->imageData[(n1+1)*GaussPix->width+n2]),2) 
 					+pow(GTYPE(GaussPix->imageData[n1*GaussPix->width+n2]-GaussPix->imageData[n1*GaussPix->width+n2+1]),2));
-			if(Magnitudes[n1*GaussPix->width+n2] > maxMag) maxMag = Magnitudes[n1*GaussPix->width+n2];
-			if(Magnitudes[n1*GaussPix->width+n2] < minMag) minMag = Magnitudes[n1*GaussPix->width+n2];			
+			
+			if(Magnitudes[n1*GaussPix->width+n2] > maxMag)
+				maxMag = Magnitudes[n1*GaussPix->width+n2];
+
+			if(Magnitudes[n1*GaussPix->width+n2] < minMag)
+				minMag = Magnitudes[n1*GaussPix->width+n2];			
 
 			tempOri = atan2(GTYPE(GaussPix->imageData[n1*GaussPix->width+n2]-GaussPix->imageData[(n1+1)*GaussPix->width+n2]), 
 				GTYPE(GaussPix->imageData[n1*GaussPix->width+n2]-GaussPix->imageData[n1*GaussPix->width+n2+1]));
@@ -215,7 +219,7 @@ int featureCalc(GIMAGE *GaussPix, IMAGE *ExPix, int octave, int blur, char *Proj
 
 					keyDescriptors[keyIndex].y = (double)n1 * pow(2.0,octave-1);//before without pow
 					keyDescriptors[keyIndex].x = (double)n2 * pow(2.0,octave-1);//before without pow
-					keyDescriptors[keyIndex].scale = 0.121212;
+					keyDescriptors[keyIndex].scale = 1.0 / pow(2.0,octave);//Magnif;//0.121212;//
 
 					keyIndex++;
 				}

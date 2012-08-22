@@ -6,7 +6,7 @@
 #include <ModelAffine/coordinates.h>
 #include <ModelAffine/fitAffineMatrix.h>
 #include <MotionExtract/MotionExtract.h>
-#include <AffineTransformer/blocks.h>
+#include <AffineTransformer/bounding_boxes.h>
 
 #include <string.h>
 #include <iostream>
@@ -95,9 +95,9 @@ void processFrames (MATRIX *selection_box, double threshold, FILE *RotationDataF
 
 		sprintf (filename,"./TestRepo/02.Test/00.Frames/%d.bmp",frameIndex);
 		//cout << filename << endl;
-		testImage = readGrey(filename);		
-		testkeyImage = cloneImage (testImage);
-
+		//testImage = readGrey(filename);		
+		testkeyImage = readGrey(filename);//cloneImage (testImage);
+		//releaseImage (testImage);
 		for (int featureIndex = 0; featureIndex < test.Number_of_Features; featureIndex ++)
 		{
 			fread ( &(test.features[featureIndex].x), sizeof (double), 1 , featureFile);
@@ -152,8 +152,10 @@ void processFrames (MATRIX *selection_box, double threshold, FILE *RotationDataF
 		fprintf (logFile,"\tFrame: %2d  Actual: %6.3lf   Translation: ( x: %8.3lf , y: %8.3lf )\n", frameIndex,2*3.14*(double)frameIndex/(double)100,0.0,0.0);
 		MATRIX *roTrans = showMotion (affine, RotationDataFile, logFile);
 
-		
-		IMAGE *boxed = render_selection (selection_box, roTrans, testImage);
+		sprintf (filename,"./TestRepo/02.Test/00.Frames/%d.bmp",frameIndex);
+		testImage = readRGB (filename);
+		double color_contrast[3] = {0,1,1};
+		IMAGE *boxed = render_selection (selection_box, roTrans, testImage, color_contrast);
 		releaseImage (testImage);
 		sprintf (filename,"./TestRepo/02.Test/10.Result/%d.bmp",frameIndex);
 		writeImage (filename,boxed);

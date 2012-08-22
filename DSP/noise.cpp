@@ -41,7 +41,23 @@ double* inverse_cdf (double domainInit, double domainEnd, int domainlen, double 
 
 void addWhiteNoise (GIMAGE *inImage, int cdf_length, double *noise_cdf_inverse, GIMAGE *outImage) {
 	for (int row = 0; row < inImage->height; row++)
-		for (int col = 0; col < inImage->width; col++) {
-			outImage->imageData[row*inImage->width+col] = inImage->imageData[row*inImage->width+col]+ noise_cdf_inverse[(int)( ( (double)rand ()/(double)RAND_MAX) * cdf_length)];
-		}
+		for (int col = 0; col < inImage->width; col++) 
+			for (int c = 0; c < inImage->numColors; c++)
+			{
+				outImage->imageData[(row*inImage->width+col)*inImage->numColors+c] = inImage->imageData[(row*inImage->width+col)*inImage->numColors+c]
+																		+ noise_cdf_inverse[(int)( ( (double)rand ()/(double)RAND_MAX) * cdf_length)];
+			}
+}
+
+void addWhiteNoise (IMAGE *inImage, int cdf_length, double *noise_cdf_inverse, IMAGE *outImage) {
+	for (int row = 0; row < inImage->height; row++)
+		for (int col = 0; col < inImage->width; col++) 
+			for (int c = 0; c < inImage->numColors; c++)
+			{
+				if (inImage->imageData[(row*inImage->width+col)*inImage->numColors+c] != 255)
+					outImage->imageData[(row*inImage->width+col)*inImage->numColors+c] = inImage->imageData[(row*inImage->width+col)*inImage->numColors+c]
+																		+ 255*noise_cdf_inverse[(int)( ( (double)rand ()/(double)RAND_MAX) * cdf_length)];
+				else
+					outImage->imageData[(row*inImage->width+col)*inImage->numColors+c] = 255;
+			}
 }

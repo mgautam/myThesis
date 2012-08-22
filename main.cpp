@@ -4,13 +4,13 @@
 #include <CriticalPoints/testCriticalPoints.h>
 #include <Matrix/testMatrix.h>
 #include <AffineTransformer/testFrames.h>
-#include <AffineTransformer/testBlocks.h>
+#include <AffineTransformer/testBoxes.h>
 #include <ModelAffine/testAffineFit.h>
 #include <MotionExtract/testMotionExtract.h>
 #include <Features/testMatchFeatures.h>
 
 #include <bmpAccess/bmpEngine.h>
-#include <AffineTransformer/blocks.h>
+#include <AffineTransformer/bounding_boxes.h>
 #include <API/videoProcessor.h>
 #include <AffineTransformer/frames.h>
 #include <ModelAffine/coordinates.h>
@@ -42,8 +42,8 @@ int main (int argc, char **argv)
 	//testMatchFeatures ();
 	
 	
-	int x[4] = {0,0,512,512};//{156,356,356,156};
-	int y[4] = {0,512,0,512};//{156,156,356,356};
+	int x[4] = {0,0,512,512};//{128,128,384,384};//
+	int y[4] = {0,512,0,512};//{128,384,128,384};//
 
 	IMAGE *inImage = readRGB ("./TestRepo/00.Test_Images/lena.bmp");
 	IMAGE *train = extract_selection ( 4, x, y, inImage); 

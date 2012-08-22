@@ -4,18 +4,16 @@
 
 COORDS* findNearestNeighbor (FEATURES TrainFeature,FEATURES TestFeature, FILE *logFile, double Threshold)
 {
-	fprintf (logFile, "\n\tFinding Nearest Neighbor...\n");
 	int FeatureVectorLength = TrainFeature.FeatureVectorLength; // == TestFeature.FeatureVectorLength
 	int numTrainFeatures = TrainFeature.Number_of_Features;
 	int numTestFeatures = TestFeature.Number_of_Features;
 
 	COORDS *coordinates = new COORDS[2];
-	//coordinates[0].Number_of_Coordinates = numTrainFeatures; // Number of Corresponding Training object 2D Position vectors
+	coordinates[0].Number_of_Coordinates = numTrainFeatures; // Number of Corresponding Training object 2D Position vectors
 	coordinates[0].x = new double [numTrainFeatures];
 	coordinates[0].y = new double [numTrainFeatures];
 	coordinates[0].scores = new double [numTrainFeatures];
-
-	//coordinates[1].Number_of_Coordinates = numTestFeatures; // Number of Testing object 2D Position vectors
+	coordinates[1].Number_of_Coordinates = numTestFeatures; // Number of Testing object 2D Position vectors
 	coordinates[1].x = new double [numTestFeatures];
 	coordinates[1].y = new double [numTestFeatures];
 	coordinates[1].scores = new double [numTestFeatures];
@@ -23,39 +21,44 @@ COORDS* findNearestNeighbor (FEATURES TrainFeature,FEATURES TestFeature, FILE *l
 
 	double Distance,minDistance;
 	int nearNeighborIndex = 0;
-	for ( int TestIndex = 0; TestIndex < numTestFeatures; TestIndex++) // Change 100 to numTestFeatures
+	for ( int TestIndex = 0; TestIndex < numTestFeatures; TestIndex++) // Change 1000 to numTestFeatures
 	{ 
 		
-		if ( TestIndex % 1000 == 0 ) fprintf (logFile,"%d ",TestIndex); // Remove
+		if ( TestIndex % 1000 == 0 ) printf ("%d ",TestIndex); // Remove
 	
 		coordinates[1].x[nearNeighborIndex] = TestFeature.features[TestIndex].x;
 		coordinates[1].y[nearNeighborIndex] = TestFeature.features[TestIndex].y;
 		minDistance = 99999999999;
 		
-		for ( int TrainIndex = 0; TrainIndex < numTrainFeatures; TrainIndex++) {
-			
+		for ( int TrainIndex = 0; TrainIndex < numTrainFeatures; TrainIndex++)
+		{			
 			Distance = 0;
 			for (int vectorIndex = 0; vectorIndex < FeatureVectorLength; vectorIndex++)
 				Distance += pow ((double)(TrainFeature.features[TrainIndex].FeatureVector[vectorIndex] - TestFeature.features[TestIndex].FeatureVector[vectorIndex]) , 2);
 			Distance = sqrt (Distance);
 			
-			if (Distance < minDistance) {
+			if (Distance < minDistance)
+			{
 				coordinates[0].x[nearNeighborIndex] = TrainFeature.features[TrainIndex].x;
 				coordinates[0].y[nearNeighborIndex] = TrainFeature.features[TrainIndex].y;
 				minDistance = Distance;
 			}
 		}
+
 		coordinates[0].scores[nearNeighborIndex] = minDistance;
 		coordinates[1].scores[nearNeighborIndex] = minDistance;
-		if ( Threshold > 0) {
+		if ( Threshold > 0)
+		{
 			// User has defined a Threshold
-			if (minDistance < Threshold) {
+			if (minDistance < Threshold)
+			{
 				// minDistance is within the Thresholded limit
 				nearNeighborIndex++;
 				// This is equivalent to only adding the nodes which are within the Threshold distance
 			}				
 		}
-		else {
+		else
+		{
 			// User has not given any specific distance threshold
 			nearNeighborIndex++;
 			// This is equivalent to adding the nodes no matter how apart the training and test vectors are
@@ -63,11 +66,11 @@ COORDS* findNearestNeighbor (FEATURES TrainFeature,FEATURES TestFeature, FILE *l
 
 	}
 	
-	fprintf (logFile,"%d\n",numTestFeatures); // Remove
+	printf ("\n"); // Remove
 
 	coordinates[0].Number_of_Coordinates = nearNeighborIndex; // Only the Number of Corresponding nearest Neighbor Training object 2D Position vectors
 	coordinates[1].Number_of_Coordinates = nearNeighborIndex; // Only the Number of Corresponding nearest Neighbor Test object 2D Position vectors
 
-	fprintf (logFile, "\tNearest Neighbors Found.\n");
+
 	return coordinates;
 }

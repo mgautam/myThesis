@@ -1,9 +1,9 @@
 #include <bmpAccess/bmpEngine.h>
-#include <AffineTransformer/blocks.h>
+#include <AffineTransformer/bounding_boxes.h>
 #include <graphics/polygons.h>
 
-#include <iostream>
-using namespace std;
+//#include <iostream>
+//using namespace std;
 
 extern int TrainObject_x;
 extern int TrainObject_y;
@@ -15,11 +15,10 @@ IMAGE* render_selection (MATRIX *selection_box, MATRIX *AffineModel, IMAGE *inIm
 	MATRIX Transformed(num_vertices,AffineModel->getHeight());
 	Transformed = (*AffineModel) * (*selection_box);
 
-	cout << Transformed << endl;
-
-	MATRIX_CONTENT_TYPE **TransformedData = Transformed.getDataPtr();
 	//cout << Transformed << endl;
 
+	MATRIX_CONTENT_TYPE **TransformedData = Transformed.getDataPtr();
+	
 	int *x = new int[num_vertices], *y = new int[num_vertices];
 	for (int col = 0; col < num_vertices; col++)
 	{
